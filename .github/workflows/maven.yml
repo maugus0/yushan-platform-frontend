@@ -1,4 +1,4 @@
-name: Yushan Frontend CI/CD Pipeline
+name: Yushan Platform Frontend CI/CD Pipeline
 
 on:
   pull_request:
@@ -418,7 +418,7 @@ jobs:
       - name: Create CI summary
         run: |
           {
-            echo "# Yushan Frontend – CI Reports";
+            echo "# Yushan PlatformFrontend – CI Reports";
             echo "- Commit: $GITHUB_SHA";
             echo "- Branch: ${GITHUB_REF##*/}";
             echo "";

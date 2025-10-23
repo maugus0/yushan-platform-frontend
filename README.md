@@ -74,7 +74,7 @@ src/
 
 ```bash
 # Clone the repository
-git clone https://github.com/maugus0/yushan-frontend.git
+git clone https://github.com/maugus0/yushan-platform-frontend.git
 cd yushan-frontend
 
 # Install dependencies
