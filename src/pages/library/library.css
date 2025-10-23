@@ -1,0 +1,240 @@
+/* library.css */
+
+.library-page {
+  padding: 24px;
+}
+
+/* --- Header and Tabs --- */
+.library-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.library-title {
+  margin: 0 !important;
+}
+
+.library-edit-btn {
+  font-weight: 600;
+}
+
+.library-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.library-remove-btn {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.library-cancel-btn {
+  font-weight: 600;
+}
+
+.library-tab-bar {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e1e6f5;
+}
+
+.library-tab {
+  padding: 8px 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.library-tab.active {
+  color: #1890ff;
+  border-bottom-color: #1890ff;
+}
+
+/* --- Main Content --- */
+.library-main-container {
+  width: 100%;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.no-data-container {
+  width: 100%;
+  text-align: center;
+  color: #aaa;
+  padding: 48px 0;
+  font-size: 16px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e1e6f5;
+}
+
+/* --- Library Grid View --- */
+.library-novel-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 32px;
+}
+
+.library-novel-card {
+  cursor: pointer;
+}
+
+.library-novel-img-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.library-novel-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.library-novel-card:hover .library-novel-img {
+  transform: scale(1.05);
+}
+
+.library-novel-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(40, 49, 87, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.library-novel-check {
+  color: white;
+  font-size: 32px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.library-novel-check.checked {
+  opacity: 1;
+}
+
+.library-novel-title {
+  font-weight: 600;
+  margin-top: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.library-novel-progress {
+  font-size: 13px;
+  color: #888;
+}
+
+/* --- History List View --- */
+.history-chapters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-chapter-row {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(81, 95, 160, 0.06);
+  position: relative;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.hoverable-history-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(81, 95, 160, 0.1);
+}
+
+.history-chapter-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+}
+
+.history-novel-cover {
+  width: 80px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.history-details {
+  flex: 1;
+}
+
+.history-novel-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.history-novel-info span {
+  font-size: 14px;
+  color: #888;
+  margin-right: 8px;
+}
+
+.history-progress {
+  color: #515fa0;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.history-arrow {
+  color: #ccc;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+.hoverable-history-row:hover .history-arrow {
+  transform: translateX(4px);
+}
+
+.history-delete-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.hoverable-history-row:hover .history-delete-btn {
+  opacity: 1;
+}
+
+/* --- Error Modal --- */
+.error-modal-content {
+  color: #cf1322;
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 8px;
+  padding: 18px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(255, 77, 79, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}

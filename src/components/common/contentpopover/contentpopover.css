@@ -1,0 +1,185 @@
+/* Popover card: medium gray background */
+.browse-popover {
+  display: flex;
+  width: 560px;
+  max-width: calc(100vw - 40px);
+  background: #e6e8ef;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  border: none;
+}
+
+/* Categories-only layout used by Browse */
+.browse-popover.categories-only {
+  width: 520px;
+  padding: 16px 12px 12px;
+  display: block;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 28px;
+}
+
+.categories-grid-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Category item: slightly thinner (600), blue text with darker gray on hover */
+.browse-popover-type {
+  font-size: 18px;
+  line-height: 30px;
+  font-weight: 600; /* changed from 700 to 600 */
+  color: #1f2937;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.browse-popover-type--strong {
+  font-weight: 600;
+} /* keep consistent */
+
+/* Hover: darker gray background + blue text */
+.browse-popover-type:hover,
+.browse-popover-type:focus {
+  color: #1677ff;
+  background: #d3d6e0;
+  outline: none;
+}
+
+/* Left rail + right pane (when not categoriesOnly) */
+.browse-popover-left {
+  width: 140px;
+  background: #dde2eb;
+  padding: 12px 10px;
+}
+
+.browse-popover-left-item {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  color: #4b5563;
+  cursor: default;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.browse-popover-left-item.active {
+  color: #1677ff;
+  background: #cfdaf0;
+}
+
+.browse-popover-right {
+  flex: 1;
+  padding: 14px 12px;
+  background: #e6e8ef;
+}
+
+.browse-popover-novels-title {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #7c8796;
+  margin-bottom: 8px;
+}
+
+/* Legacy container kept for compatibility */
+.browse-popover-novels-list {
+  display: flex;
+  gap: 24px;
+}
+
+/* Force AntD popover container + arrow to medium gray for Browse and Rankings */
+.ant-popover.browse-popover-overlay .ant-popover-inner,
+.ant-popover.rankings-popover-overlay .ant-popover-inner {
+  background: #e6e8ef !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.ant-popover.browse-popover-overlay .ant-popover-inner-content,
+.ant-popover.rankings-popover-overlay .ant-popover-inner-content {
+  padding: 0 !important;
+  background: transparent !important;
+  border-radius: 12px !important;
+}
+
+/* Arrow color to match the card */
+.ant-popover.browse-popover-overlay .ant-popover-arrow:before,
+.ant-popover.rankings-popover-overlay .ant-popover-arrow:before {
+  background: #e6e8ef !important;
+}
+
+.ant-popover.browse-popover-overlay .ant-popover-arrow:after,
+.ant-popover.rankings-popover-overlay .ant-popover-arrow:after {
+  background: #e6e8ef !important;
+  box-shadow: none !important;
+}
+
+/* Rankings popover items: slightly thinner (600) + same hover behavior */
+.rankings-popover {
+  background: transparent;
+  padding: 8px;
+  min-width: 240px;
+}
+
+.rankings-popover-item {
+  font-size: 18px;
+  line-height: 30px;
+  font-weight: 600; /* changed from 700 to 600 */
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.rankings-popover-item:hover,
+.rankings-popover-item:focus {
+  color: #1677ff;
+  background: #d3d6e0;
+  outline: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .browse-popover {
+    width: auto;
+    max-width: calc(100vw - 24px);
+  }
+  .categories-grid {
+    gap: 8px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .browse-popover {
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+  .browse-popover-right {
+    padding: 14px 12px;
+  }
+  .browse-popover-type {
+    font-size: 16px;
+    line-height: 28px;
+  }
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 8px 0;
+  }
+}
