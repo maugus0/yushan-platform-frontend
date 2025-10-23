@@ -1,6 +1,6 @@
-# Yushan Frontend
+# Yushan Platform Frontend
 
-> 🌟 **Frontend application for Yushan** - A gamified web novel reading platform that transforms reading into an engaging, social experience.
+> 🌟 **Frontend application for Yushan Platform** - A gamified web novel reading platform that transforms reading into an engaging, social experience.
 
 ## 🚀 Tech Stack
 
@@ -68,13 +68,13 @@ src/
 
 - Node.js 16+
 - npm 8+ or yarn
-- Yushan Backend running (for full functionality)
+- Yushan Microservices running (for full functionality)
 
 ### Quick Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/yushan-frontend.git
+git clone https://github.com/maugus0/yushan-frontend.git
 cd yushan-frontend
 
 # Install dependencies
@@ -214,4 +214,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Yushan Frontend** - Bringing gamified reading to life 🚀
+**Yushan Platform Frontend** - Bringing gamified reading to life 🚀

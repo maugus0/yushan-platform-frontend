@@ -254,7 +254,7 @@ jobs:
       contents: write
     environment:
       name: github-pages
-      url: https://maugus0.github.io/yushan-frontend/
+      url: https://maugus0.github.io/yushan-platform-frontend/
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -298,7 +298,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          URL="https://maugus0.github.io/yushan-frontend/"
+          URL="https://maugus0.github.io/yushan-platform-frontend/"
           ORIGIN=$(echo "$URL" | sed -E 's#^(https?://[^/]+)/.*#\1#')
           echo "Checking $URL ..."
           for i in {1..24}; do
@@ -352,7 +352,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export URL="https://maugus0.github.io/yushan-frontend/"
+          export URL="https://maugus0.github.io/yushan-platform-frontend/"
           cat > smoke.js << 'JS'
           const { chromium } = require('playwright');
           (async () => {
@@ -361,7 +361,7 @@ jobs:
             const page = await context.newPage();
             const consoleErrors = [];
             page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
-            const targetUrl = process.env.URL || 'https://maugus0.github.io/yushan-frontend/';
+            const targetUrl = process.env.URL || 'https://maugus0.github.io/yushan-platform-frontend/';
             await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
             // wait for some content to render under #root
             try {
