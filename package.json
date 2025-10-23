@@ -1,8 +1,8 @@
 {
-  "name": "yushan-frontend",
+  "name": "yushan-platform-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://maugus0.github.io/yushan-frontend",
+  "homepage": "https://maugus0.github.io/yushan-platform-frontend",
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
     "@testing-library/user-event": "^13.5.0",
