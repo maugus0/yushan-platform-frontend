@@ -124,7 +124,7 @@ function App() {
           {/* NEW: Wrap the whole app so any page (reader/settings) can access reading settings */}
           <ReadingSettingsProvider>
             <Router
-              basename={process.env.NODE_ENV === 'production' ? '/yushan-frontend' : ''}
+              basename={process.env.NODE_ENV === 'production' ? '/yushan-platform-frontend' : ''}
               future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
             >
               <div className="App">
