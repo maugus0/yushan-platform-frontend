@@ -23,7 +23,8 @@ const TopNovels = () => {
         setLoading(true);
         setError(null);
         const response = await axios.get(
-          'https://yushan-backend-staging.up.railway.app/api/ranking/novel',
+          //'https://yushan-backend-staging.up.railway.app/api/ranking/novel',
+          'https://yushan.duckdns.org/api/v1/ranking/novel',
           {
             params: {
               page: 0,

@@ -18,7 +18,8 @@ const CategoriesGrid = () => {
         setLoading(true);
         setError(null);
         const response = await axios.get(
-          'https://yushan-backend-staging.up.railway.app/api/categories'
+          //'https://yushan-backend-staging.up.railway.app/api/categories'
+          'https://yushan.duckdns.org/api/v1/content/categories',
         );
 
         if (response.data && response.data.data && response.data.data.categories) {
