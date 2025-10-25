@@ -22,6 +22,9 @@ const WriterNavbar = () => {
   const [collapsed, setCollapsed] = useState(window.innerWidth < 900);
   const [avatarSrc, setAvatarSrc] = useState('');
 
+  // 统一用户名展示，避免重复与不一致
+  const displayName = (user?.username && String(user.username).trim()) || 'User';
+
   useEffect(() => {
     const handleResize = () => {
       setCollapsed(window.innerWidth < 900);
@@ -116,7 +119,7 @@ const WriterNavbar = () => {
       </div>
 
       <div className="writer-navbar-footer writer-navbar-footer-fixed">
-        <Tooltip title={collapsed ? user?.username || 'User' : ''} placement="right">
+        <Tooltip title={collapsed ? displayName : ''} placement="right">
           <Avatar
             size={40}
             src={avatarSrc}
@@ -125,7 +128,7 @@ const WriterNavbar = () => {
             onError={handleAvatarError}
           />
         </Tooltip>
-        {!collapsed && <span className="writer-navbar-username">{user?.username || 'User'}</span>}
+        {!collapsed && <span className="writer-navbar-username">{displayName}</span>}
       </div>
     </Sider>
   );

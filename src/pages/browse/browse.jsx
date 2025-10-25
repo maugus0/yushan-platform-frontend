@@ -254,10 +254,10 @@ const BrowsePage = () => {
 
         setNovels(transformedNovels);
         if (transformedNovels.length) {
-          console.debug(
-            '[Browse] first covers:',
-            transformedNovels.slice(0, 5).map((n) => n.cover)
-          );
+          // console.debug(
+          //   '[Browse] first covers:',
+          //   transformedNovels.slice(0, 5).map((n) => n.cover)
+          // );
         }
         setTotalNovels(response.totalElements || 0);
       } catch (error) {
