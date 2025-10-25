@@ -47,7 +47,7 @@ const WriterStoryProfile = () => {
         ]);
 
         setStory(fetchedStory);
-        const newList = chaptersRes.data.chapters || [];
+        const newList = chaptersRes.content || [];
         setChaptersData(newList);
         setChaptersHasMore(newList.length === PAGE_SIZE);
       } catch (error) {
