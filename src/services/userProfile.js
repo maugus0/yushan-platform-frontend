@@ -265,8 +265,44 @@ const userProfileService = {
   },
 
   async getUserById(userId) {
-    const response = await axios.get(`${API_URL}/users/${userId}`);
-    return response.data?.data;
+    // use the /users/{userId}/profile endpoint (returns public profile fields)
+    const response = await axios.get(`${API_URL}/users/${userId}/profile`);
+    const apiData = response.data?.data;
+    if (!apiData) return null;
+
+    // Normalize profile fields with sane defaults
+    const normalized = {
+      ...apiData,
+      level: apiData.level ?? 0,
+      exp: apiData.currentExp ?? apiData.exp ?? 0,
+      readTime: apiData.readTime ?? 0,
+      readBookNum: apiData.readBookNum ?? 0,
+    };
+
+    const user = transformUserData(normalized);
+
+    // Fetch gamification level/exp for this user (separate endpoint)
+    try {
+      const lvlRes = await axios.get(`${API_URL}/gamification/users/${userId}/level`);
+      const lvlData = lvlRes?.data?.data;
+      if (lvlData) {
+        user.level = lvlData.currentLevel ?? user.level ?? 0;
+        user.exp = lvlData.totalExp ?? user.exp ?? 0;
+      }
+    } catch (e) {
+      // ignore gamification level errors
+    }
+
+    // Fetch achievements for this user
+    let achievements = [];
+    try {
+      const achRes = await axios.get(`${API_URL}/gamification/achievements/userId/${userId}`);
+      achievements = achRes?.data?.data || [];
+    } catch (e) {
+      achievements = [];
+    }
+
+    return { user, achievements };
   },
 };
 
