@@ -239,6 +239,118 @@
   margin-left: 6px;
 }
 
+/* header row: small logo + title above the achievements list */
+.achievements-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(20, 30, 50, 0.04);
+  width: 100%;
+}
+
+/* emoji on the left of title */
+.achievements-header-emoji {
+  font-size: 22px;
+  line-height: 1;
+  margin-top: 0;
+}
+
+.achievements-header-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.achievements-header-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #888;
+}
+
+/* Achievements container: allow horizontal scroll so names can be shown in full one line */
+.profile-achievements {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 0;
+  margin-top: 12px;
+}
+
+/* each achievement card */
+.achievement-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(16, 24, 40, 0.03);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+  white-space: nowrap;
+}
+
+.achievement-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+/* show full name on single line by allowing the container to scroll */
+.achievement-name {
+  display: block;
+  font-size: 13px;
+  color: #888;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: none;
+  padding: 0 6px;
+}
+
+/* mobile / small screens: stack and wrap, remove horizontal scroll */
+@media (max-width: 720px) {
+  .achievements-header {
+    align-items: center;
+    padding-top: 12px;
+    margin-top: 20px;
+  }
+
+  .achievements-header-emoji {
+    font-size: 20px;
+  }
+
+  .profile-achievements {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .achievement-item {
+    width: calc(50% - 10px);
+    white-space: normal; /* allow wrapping on smaller cards */
+  }
+
+  .achievement-name {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
+/* Responsive tweaks: restore previous working mobile styles */
 @media (max-width: 900px) {
   .profile-content-section {
     padding: 0 12px;
@@ -303,4 +415,78 @@
   .profile-bg-stats-item {
     min-width: 80px;
   }
+
+  /* Achievements: ensure stack on small screens, keep your light-gray color */
+  .achievements-header {
+    padding-top: 12px;
+    margin-top: 20px;
+  }
+  .achievements-header-emoji {
+    font-size: 20px;
+  }
+  .achievements-header-title {
+    font-size: 18px;
+  }
+
+  .profile-achievements {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .achievement-item {
+    width: calc(50% - 10px);
+    white-space: normal;
+  }
+
+  .achievement-name {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    color: #888; /* keep light-gray as you requested */
+  }
+}
+
+/* Very small screens: compact avatar and vertical achievement rows */
+@media (max-width: 420px) {
+  .profile-avatar-wrapper {
+    width: 96px;
+    height: 96px;
+    margin-top: -48px;
+  }
+  .profile-username {
+    font-size: 20px !important;
+  }
+
+  .profile-achievements {
+    gap: 8px;
+  }
+  .achievement-item {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 6px;
+  }
+  .achievement-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0;
+  }
+  .achievement-name {
+    font-size: 13px;
+    white-space: normal;
+    color: #888; /* keep light-gray */
+  }
+}
+
+/* keep desktop scrollbar subtle (unchanged) */
+.profile-achievements::-webkit-scrollbar {
+  height: 8px;
+}
+.profile-achievements::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
 }
