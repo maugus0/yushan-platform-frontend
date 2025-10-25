@@ -265,8 +265,8 @@ const userProfileService = {
   },
 
   async getUserById(userId) {
-    // use the /users/{userId}/profile endpoint (returns public profile fields)
-    const response = await axios.get(`${API_URL}/users/${userId}/profile`);
+    // endpoint changed: use /users/{userId}
+    const response = await axios.get(`${API_URL}/users/${userId}`);
     const apiData = response.data?.data;
     if (!apiData) return null;
 
