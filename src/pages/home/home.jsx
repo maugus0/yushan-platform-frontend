@@ -83,6 +83,7 @@ const Homepage = () => {
         const response = await getNewestNovels();
         setNewestNovels(response.content || []);
       } catch (error) {
+        console.error('Error fetching newest novels:', error);
         setNewestNovels([]);
       }
     };
@@ -92,6 +93,7 @@ const Homepage = () => {
         const response = await getWeeklyFeaturedNovels();
         setWeeklyFeaturedNovels(response.content || []);
       } catch (error) {
+        console.error('Error fetching weekly featured novels:', error);
         setWeeklyFeaturedNovels([]);
       }
     };
@@ -101,6 +103,7 @@ const Homepage = () => {
         const response = await getOngoingNovels();
         setOngoingNovels(response.content || []);
       } catch (error) {
+        console.error('Error fetching ongoing novels:', error);
         setOngoingNovels([]);
       }
     };
@@ -110,6 +113,7 @@ const Homepage = () => {
         const response = await getCompletedNovels();
         setCompletedNovels(response.content || []);
       } catch (error) {
+        console.error('Error fetching completed novels:', error);
         setCompletedNovels([]);
       }
     };
