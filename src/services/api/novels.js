@@ -33,7 +33,7 @@ export const getNovels = async (params = {}) => {
     const response = await httpClient.get(`${BASE_URL}/novels?${searchParams.toString()}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching novels:', error);
+    console.warn('Error fetching novels:', error?.message || error);
     throw error;
   }
 };
@@ -86,8 +86,7 @@ export const getWeeklyFeaturedNovels = async () => {
       content: transformNovelData(novels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching weekly featured novels:', error);
-    // Return empty content with proper structure instead of throwing
+    console.warn('Weekly featured novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -111,7 +110,7 @@ export const getOngoingNovels = async () => {
       content: transformNovelData(ongoingNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching ongoing novels:', error);
+    console.warn('Ongoing novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -135,7 +134,7 @@ export const getCompletedNovels = async () => {
       content: transformNovelData(completedNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching completed novels:', error);
+    console.warn('Completed novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -153,7 +152,7 @@ export const getNewestNovels = async () => {
       content: transformNovelData(response.data?.content || []),
     };
   } catch (error) {
-    console.error('Error fetching newest novels:', error);
+    console.warn('Newest novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };

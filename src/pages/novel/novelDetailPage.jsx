@@ -32,6 +32,7 @@ import reportsApi from '../../services/reports';
 import libraryApi from '../../services/library';
 import historyApi from '../../services/history';
 import userProfileService from '../../services/userProfile'; // Assume this service exists
+import gamificationApi from '../../services/gamification'; // <-- added
 import { processImageUrl } from '../../utils/imageUtils';
 import { IMAGE_BASE_URL } from '../../config/images';
 import testImg from '../../assets/images/novel_default.png'; // keep fallback
@@ -40,8 +41,16 @@ import ReviewSection from '../../components/novel/novelcard/reviewSection';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
+// const REPORT_TYPE_OPTIONS = [
+//   { label: 'Pornographic Content', value: 'PORN' },
+//   { label: 'Hate or Bullying', value: 'HATE_BULLYING' },
+//   { label: 'Release of personal info', value: 'PERSONAL_INFO' },
+//   { label: 'Other inappropriate material', value: 'INAPPROPRIATE' },
+//   { label: 'Spam', value: 'SPAM' },
+// ];
+
 const REPORT_TYPE_OPTIONS = [
-  { label: 'Pornographic Content', value: 'PORN' },
+  { label: 'Pornographic Content', value: 'PORNOGRAPHIC' },
   { label: 'Hate or Bullying', value: 'HATE_BULLYING' },
   { label: 'Release of personal info', value: 'PERSONAL_INFO' },
   { label: 'Other inappropriate material', value: 'INAPPROPRIATE' },
@@ -159,14 +168,34 @@ export default function NovelDetailPage() {
     };
   }, [novelId]);
 
+  // Move dispatch up so effects can use it
+  const dispatch = useDispatch();
+  const userYuan = useSelector((state) => state.user?.user?.yuan ?? 0);
+
   // Load current user info
   useEffect(() => {
     async function loadUser() {
-      const user = await userProfileService.getCurrentUser();
-      setCurrentUser(user);
+      try {
+        const user = await userProfileService.getCurrentUser();
+        setCurrentUser(user);
+      } catch (e) {
+        // ignore
+      }
+
+      // fetch gamification stats and update yuan in redux if available
+      try {
+        const stats = await gamificationApi.getMyStats();
+        const yuan = Number(stats?.yuanBalance ?? 0);
+        dispatch({
+          type: 'user/updateYuan',
+          payload: yuan,
+        });
+      } catch (e) {
+        // ignore gamification errors (do not block page)
+      }
     }
     loadUser();
-  }, []);
+  }, [dispatch]);
 
   // Load reviews when page changes or after user info loaded
   useEffect(() => {
@@ -291,10 +320,6 @@ export default function NovelDetailPage() {
       }
     }
   };
-
-  // Get current user's yuan from redux store (login sets it)
-  const dispatch = useDispatch();
-  const userYuan = useSelector((state) => state.user?.user?.yuan ?? 0);
 
   // Vote handler: no longer update votesLeft, just showTip
   const handleVote = async () => {
