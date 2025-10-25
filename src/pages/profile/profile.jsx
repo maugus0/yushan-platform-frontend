@@ -10,6 +10,7 @@ import { WriterIcon } from '../../components/user/icons/userrolesicon';
 import userProfileService from '../../services/userProfile';
 import { updateUser } from '../../store/slices/user';
 import { processUserAvatar, getGenderBasedAvatar } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -60,11 +61,7 @@ const Profile = () => {
   // Update avatar source when user data changes
   useEffect(() => {
     if (user) {
-      const processedAvatar = processUserAvatar(
-        user.avatarUrl,
-        user.gender,
-        process.env.REACT_APP_API_URL?.replace('/api', '/images')
-      );
+      const processedAvatar = processUserAvatar(user.avatarUrl, user.gender, IMAGE_BASE_URL);
       setAvatarSrc(processedAvatar);
     }
   }, [user]);
