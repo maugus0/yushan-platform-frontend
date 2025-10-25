@@ -344,7 +344,7 @@ test('renders novel details correctly (title, synopsis, category, chapters)', as
 //   };
 // });
 
-const NovelDetailPageWithNavMock = require('../novelDetailPage').default;
+//const NovelDetailPageWithNavMock = require('../novelDetailPage').default;
 
 // test('Read button navigates to last read chapter when history exists, otherwise to chapter 1', async () => {
 //   const store = mockStore({ user: { user: { yuan: 10 } } });

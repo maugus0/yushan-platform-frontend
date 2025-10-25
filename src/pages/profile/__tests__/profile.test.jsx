@@ -153,18 +153,21 @@ describe('Profile Page', () => {
 
   test('renders another user profile when userId is in query and hides Edit button', async () => {
     const { getUserById } = require('../../../services/userProfile');
-    // Profile component expects getUserById to return the raw user data (not a wrapper)
+    // Profile component expects getUserById to return { user, achievements }
     getUserById.mockResolvedValue({
-      uuid: '999',
-      username: 'otherUser',
-      email: 'other@example.com',
-      gender: 2,
-      level: 1,
-      isAuthor: false,
-      profileDetail: 'Another bio',
-      readTime: 20,
-      readBookNum: 5,
-      exp: 100,
+      user: {
+        uuid: '999',
+        username: 'otherUser',
+        email: 'other@example.com',
+        gender: 2,
+        level: 1,
+        isAuthor: false,
+        profileDetail: 'Another bio',
+        readTime: 20,
+        readBookNum: 5,
+        exp: 100,
+      },
+      achievements: [],
     });
 
     mockLocation = { search: '?userId=999' };
@@ -185,16 +188,19 @@ describe('Profile Page', () => {
     });
   });
 
-  // test('handles fetch failure gracefully and shows error message', async () => {
-  //   const { getCurrentUser } = require('../../../services/userProfile');
-  //   getCurrentUser.mockRejectedValue(new Error('Network Error'));
+  test('handles fetch failure gracefully and falls back to store user', async () => {
+    const { getCurrentUser } = require('../../../services/userProfile');
+    getCurrentUser.mockRejectedValue(new Error('Network Error'));
 
-  //   renderWithProviders(<Profile />);
+    renderWithProviders(<Profile />);
 
-  //   await waitFor(() => {
-  //     expect(message.error).toHaveBeenCalledWith('Failed to load profile data');
-  //   });
-  // });
+    // component should fall back to currentUser from store and render username
+    await waitFor(() => {
+      expect(screen.getByText(baseUser.username)).toBeInTheDocument();
+      // message.error is not used by Profile on fetch failure; ensure we didn't call it
+      expect(message.error).not.toHaveBeenCalled();
+    });
+  });
 
   test('uses gender-based fallback when avatar fails (calls getGenderBasedAvatar)', async () => {
     const { getCurrentUser } = require('../../../services/userProfile');

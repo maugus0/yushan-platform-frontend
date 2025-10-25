@@ -38,8 +38,10 @@ const Profile = () => {
       setLoading(true);
       try {
         if (userId && userId !== currentUser?.uuid) {
-          const data = await userProfileService.getUserById(userId);
-          setUser(data);
+          const result = await userProfileService.getUserById(userId);
+          // result = { user, achievements }
+          setUser(result?.user || null);
+          setAchievements(result?.achievements || []);
         } else {
           const response = await userProfileService.getCurrentUser();
           if (response.code === 200 && response.data) {
