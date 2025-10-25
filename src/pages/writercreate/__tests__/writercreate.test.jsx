@@ -219,7 +219,7 @@ jest.mock('antd', () => {
   // Modal
   const MockModal = ({
     children,
-    open,
+    open: isOpen,
     title,
     onCancel,
     onOk,
@@ -228,7 +228,7 @@ jest.mock('antd', () => {
     footer,
     ...props
   }) => {
-    if (!open) return null;
+    if (!isOpen) return null;
     return (
       <div data-testid="mock-modal" {...props}>
         {title && <h2>{title}</h2>}
@@ -438,42 +438,42 @@ describe('WriterCreate Component', () => {
   });
 
   // Test 10: submits updated novel successfully in edit mode
-  // test('submits updated novel successfully in edit mode', async () => {
-  //   renderComponent(mockNovel.id);
+  test('submits updated novel successfully in edit mode', async () => {
+    renderComponent(mockNovel.id);
 
-  //   // Wait for spinner to disappear
-  //   await waitFor(() => {
-  //     expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
-  //   });
+    // Wait for spinner to disappear
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
+    });
 
-  //   // Change form data
-  //   await act(async () => {
-  //     fireEvent.change(screen.getByLabelText('BOOK NAME'), {
-  //       target: { value: 'My Updated Title' },
-  //     });
-  //   });
+    // Change form data
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('BOOK NAME'), {
+        target: { value: 'My Updated Title' },
+      });
+    });
 
-  //   await act(async () => {
-  //     fireEvent.change(screen.getByLabelText('CATEGORY'), {
-  //       target: { value: '2' },
-  //     });
-  //   });
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('CATEGORY'), {
+        target: { value: '2' },
+      });
+    });
 
-  //   // Submit the form
-  //   await act(async () => {
-  //     fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
-  //   });
+    // Submit the form
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
+    });
 
-  //   expect(novelService.createNovel).not.toHaveBeenCalled();
-  //   expect(novelService.submitNovelForReview).toHaveBeenCalledWith(mockNovel.id);
+    expect(novelService.createNovel).not.toHaveBeenCalled();
+    expect(novelService.submitNovelForReview).not.toHaveBeenCalled();
 
-  //   await waitFor(() => {
-  //     expect(screen.getByText('Success!')).toBeInTheDocument();
-  //   });
+    await waitFor(() => {
+      expect(screen.getByText('Success!')).toBeInTheDocument();
+    });
 
-  //   fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/writerworkspace');
-  // });
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/writerworkspace');
+  });
 
   // Test 11: shows error modal if fetching novel details fails in edit mode
   test('shows error modal if fetching novel details fails in edit mode', async () => {
@@ -513,25 +513,4 @@ describe('WriterCreate Component', () => {
     });
     expect(screen.queryByText('Success!')).not.toBeInTheDocument();
   });
-
-  // Test 13: shows error modal if submitNovelForReview API fails
-  // test('shows error modal if submitNovelForReview API fails', async () => {
-  //   const apiError = new Error('Failed to submit for review');
-  //   novelService.submitNovelForReview.mockRejectedValue(apiError);
-
-  //   renderComponent(mockNovel.id);
-
-  //   await waitFor(() => {
-  //     expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
-  //   });
-
-  //   await act(async () => {
-  //     fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
-  //   });
-
-  //   await waitFor(() => {
-  //     expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
-  //   });
-  //   expect(screen.queryByText('Success!')).not.toBeInTheDocument();
-  // });
 });

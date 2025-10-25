@@ -64,7 +64,8 @@ describe('chapterService (robust tests, minimal fragile assertions)', () => {
       { id: 1, novelId },
       { id: 2, novelId },
     ];
-    axios.get.mockResolvedValue({ data: mockChapters });
+
+    axios.get.mockResolvedValue({ data: { data: mockChapters } });
 
     const result = await chapterService.getChapterByNovelId(novelId, 1, 10);
     expect(Array.isArray(result)).toBe(true);

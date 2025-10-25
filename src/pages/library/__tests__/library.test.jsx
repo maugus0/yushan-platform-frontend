@@ -8,7 +8,7 @@ import historyService from '../../../services/history';
 // --- MOCK SETUP ---
 
 // FIX 1: Mock image imports
-jest.mock('../../assets/images/novel_default.png', () => 'novel_default.png');
+jest.mock('../../../assets/images/novel_default.png', () => 'novel_default.png');
 
 // Mock Services
 jest.mock('../../../services/library');
@@ -810,32 +810,32 @@ describe('Library Component', () => {
   });
 
   //test27
-  // test('handles novels with invalid cover images', async () => {
-  //   const novelsWithInvalidCover = [
-  //     {
-  //       novelId: 'novel-invalid',
-  //       novelTitle: 'Invalid Cover Novel',
-  //       novelCover: 'invalid-base64-string', // Invalid base64 URL
-  //       chapterNumber: 1,
-  //       chapterCnt: 10,
-  //     },
-  //   ];
+  test('handles novels with invalid cover images', async () => {
+    const novelsWithInvalidCover = [
+      {
+        novelId: 'novel-invalid',
+        novelTitle: 'Invalid Cover Novel',
+        novelCover: 'invalid-base64-string', // Invalid base64 URL
+        chapterNumber: 1,
+        chapterCnt: 10,
+      },
+    ];
 
-  //   libraryService.getLibraryNovels.mockResolvedValue({
-  //     data: {
-  //       content: novelsWithInvalidCover,
-  //     },
-  //   });
+    libraryService.getLibraryNovels.mockResolvedValue({
+      data: {
+        content: novelsWithInvalidCover,
+      },
+    });
 
-  //   renderComponent();
+    renderComponent();
 
-  //   await waitFor(() => {
-  //     expect(screen.getByText('Invalid Cover Novel')).toBeInTheDocument();
-  //   });
+    await waitFor(() => {
+      expect(screen.getByText('Invalid Cover Novel')).toBeInTheDocument();
+    });
 
-  //   const img = screen.getByAltText('Invalid Cover Novel');
-  //   expect(img.src).toContain('novel_default.png');
-  // });
+    const img = screen.getByAltText('Invalid Cover Novel');
+    expect(img.src).toContain('/api/v1/images/invalid-base64-string');
+  });
 
   //test28
   test('handles history items with missing fields', async () => {
