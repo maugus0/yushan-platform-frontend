@@ -34,7 +34,6 @@ import historyApi from '../../services/history';
 import userProfileService from '../../services/userProfile'; // Assume this service exists
 import { processImageUrl } from '../../utils/imageUtils';
 import { IMAGE_BASE_URL } from '../../config/images';
-import { toAbsoluteUrl } from '../../services/_http';
 import gamificationApi from '../../services/gamification'; // <-- added
 import testImg from '../../assets/images/novel_default.png'; // keep fallback
 import PowerStatusVote from '../../components/novel/novelcard/powerStatusVote';
