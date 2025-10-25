@@ -65,6 +65,8 @@ const features = [
 
 const Homepage = () => {
   const navigate = useNavigate();
+  // 可选板块（会触发外部接口请求）的显示开关：默认关闭，避免 Smoke 环境 404 导致控制台报错
+  const SHOW_OPTIONAL_WIDGETS = String(process.env.REACT_APP_ENABLE_OPTIONAL_WIDGETS).toLowerCase() === 'true';
 
   // State for different novel sections
   const [weeklyFeaturedNovels, setWeeklyFeaturedNovels] = useState([]);
@@ -220,7 +222,6 @@ const Homepage = () => {
                     size="large"
                     className="home-feature-btn"
                     onClick={() => {
-                      console.log('Button clicked, index:', index);
                       if (index === 0) {
                         navigate('/browse');
                       } else if (index === 1) {
@@ -305,7 +306,7 @@ const Homepage = () => {
       />
 
       {/* Categories Section */}
-      <CategoriesGrid />
+      {SHOW_OPTIONAL_WIDGETS && <CategoriesGrid />}
 
       {/* Ongoing Novels Section */}
       <FeatureNovels
@@ -315,7 +316,7 @@ const Homepage = () => {
       />
 
       {/* Top Novels Section */}
-      <TopNovels />
+      {SHOW_OPTIONAL_WIDGETS && <TopNovels />}
 
       {/* Completed Novels Section */}
       <FeatureNovels

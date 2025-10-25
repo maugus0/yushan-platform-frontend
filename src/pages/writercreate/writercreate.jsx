@@ -27,6 +27,8 @@ const WriterCreate = () => {
   const searchParams = new URLSearchParams(location.search);
   const incomingId = searchParams.get('id');
 
+  const isBase64DataUrl = (val) => typeof val === 'string' && /^data:image\//i.test(val);
+
   useEffect(() => {
     const getTypeOptions = async () => {
       setLoading(true);
@@ -115,7 +117,7 @@ const WriterCreate = () => {
   };
 
   const handleSubmit = async (values) => {
-    if (!coverUrl) {
+    if (!incomingId && !isBase64DataUrl(coverUrl)) {
       setErrorMsg('Please upload a book cover before submitting.');
       setAlertVisible(true);
       return;
@@ -124,20 +126,23 @@ const WriterCreate = () => {
     setAlertVisible(false);
     const novelData = {
       title: values.bookname,
-      coverImgBase64: coverUrl,
       synopsis: values.synopsis,
       categoryId: values.types,
       isCompleted: false,
     };
+    if (isBase64DataUrl(coverUrl)) {
+      novelData.coverImgBase64 = coverUrl;
+    }
     try {
       let res;
       if (incomingId) {
         res = await novelService.changeNovelDetailById(incomingId, novelData);
+        setSuccessModal(true);
       } else {
         res = await novelService.createNovel(novelData);
+        await novelService.submitNovelForReview(res.id);
+        setSuccessModal(true);
       }
-      await novelService.submitNovelForReview(res.id);
-      setSuccessModal(true);
     } catch (error) {
       setErrorMsg(error.message || 'Failed to submit novel.');
       setAlertVisible(true);

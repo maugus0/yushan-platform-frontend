@@ -21,20 +21,9 @@ const WriterCreateChapters = () => {
   const searchParams = new URLSearchParams(location.search);
   const novelId = searchParams.get('novelid') || searchParams.get('id');
   const chapterId = searchParams.get('chapterid');
-  const coverParam = searchParams.get('coverImgBase64') || searchParams.get('imgurl') || '';
-
-  const isValidCoverUrl = (url) =>
-    typeof url === 'string' && !!url && /^(https?:\/\/|data:image\/)/i.test(url);
 
   useEffect(() => {
     setLoading(true);
-    if (coverParam && !isValidCoverUrl(coverParam)) {
-      setErrorMsg(
-        'Invalid cover image URL. Please reselect the cover in Settings. Only http(s) links or data:image URIs are supported.'
-      );
-      setErrorModal(true);
-    }
-
     if (chapterId) {
       const getChapterDetails = async () => {
         try {
@@ -43,7 +32,7 @@ const WriterCreateChapters = () => {
           setChapterName(chapterData.data.title || '');
           setContent(chapterData.data.content || '');
         } catch (error) {
-          setErrorMsg(error.message || 'Failed to load chapter details. Please try again.');
+          setErrorMsg(error.message || 'Failed to load chapter details.');
           setErrorModal(true);
         } finally {
           setLoading(false);
@@ -56,7 +45,7 @@ const WriterCreateChapters = () => {
           const chapterData = await chapterService.getNextChapterNumber(novelId);
           setChapterNumber(String(chapterData.data));
         } catch (error) {
-          setErrorMsg(error.message || 'Failed to get next chapter number. Please try again.');
+          setErrorMsg(error.message || 'Failed to get next chapter number.');
           setErrorModal(true);
         } finally {
           setLoading(false);
@@ -98,7 +87,7 @@ const WriterCreateChapters = () => {
       navigate(-1);
       setPublishModal(false);
     } catch (error) {
-      setErrorMsg(error.message || 'Failed to save chapter. Please try again.');
+      setErrorMsg(error.message || 'Failed to save chapter.');
       setPublishModal(false);
       setErrorModal(true);
     }
@@ -190,7 +179,7 @@ const WriterCreateChapters = () => {
         />
         <Modal
           open={errorModal}
-          title="Validation/Error"
+          title="Error"
           onCancel={() => setErrorModal(false)}
           footer={[
             <Button key="ok" type="primary" onClick={() => setErrorModal(false)}>
@@ -224,7 +213,7 @@ const WriterCreateChapters = () => {
               <path d="M12 7v5" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
               <circle cx="12" cy="16" r="1.2" fill="#fff" />
             </svg>
-            {errorMsg || 'An unexpected error occurred. Please try again.'}
+            {errorMsg || 'An unexpected error occurred.'}
           </div>
         </Modal>
       </div>

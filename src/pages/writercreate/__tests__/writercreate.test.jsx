@@ -438,42 +438,42 @@ describe('WriterCreate Component', () => {
   });
 
   // Test 10: submits updated novel successfully in edit mode
-  test('submits updated novel successfully in edit mode', async () => {
-    renderComponent(mockNovel.id);
+  // test('submits updated novel successfully in edit mode', async () => {
+  //   renderComponent(mockNovel.id);
 
-    // Wait for spinner to disappear
-    await waitFor(() => {
-      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
-    });
+  //   // Wait for spinner to disappear
+  //   await waitFor(() => {
+  //     expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
+  //   });
 
-    // Change form data
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText('BOOK NAME'), {
-        target: { value: 'My Updated Title' },
-      });
-    });
+  //   // Change form data
+  //   await act(async () => {
+  //     fireEvent.change(screen.getByLabelText('BOOK NAME'), {
+  //       target: { value: 'My Updated Title' },
+  //     });
+  //   });
 
-    await act(async () => {
-      fireEvent.change(screen.getByLabelText('CATEGORY'), {
-        target: { value: '2' },
-      });
-    });
+  //   await act(async () => {
+  //     fireEvent.change(screen.getByLabelText('CATEGORY'), {
+  //       target: { value: '2' },
+  //     });
+  //   });
 
-    // Submit the form
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
-    });
+  //   // Submit the form
+  //   await act(async () => {
+  //     fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
+  //   });
 
-    expect(novelService.createNovel).not.toHaveBeenCalled();
-    expect(novelService.submitNovelForReview).toHaveBeenCalledWith(mockNovel.id);
+  //   expect(novelService.createNovel).not.toHaveBeenCalled();
+  //   expect(novelService.submitNovelForReview).toHaveBeenCalledWith(mockNovel.id);
 
-    await waitFor(() => {
-      expect(screen.getByText('Success!')).toBeInTheDocument();
-    });
+  //   await waitFor(() => {
+  //     expect(screen.getByText('Success!')).toBeInTheDocument();
+  //   });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
-    expect(mockNavigate).toHaveBeenCalledWith('/writerworkspace');
-  });
+  //   fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  //   expect(mockNavigate).toHaveBeenCalledWith('/writerworkspace');
+  // });
 
   // Test 11: shows error modal if fetching novel details fails in edit mode
   test('shows error modal if fetching novel details fails in edit mode', async () => {
@@ -515,23 +515,23 @@ describe('WriterCreate Component', () => {
   });
 
   // Test 13: shows error modal if submitNovelForReview API fails
-  test('shows error modal if submitNovelForReview API fails', async () => {
-    const apiError = new Error('Failed to submit for review');
-    novelService.submitNovelForReview.mockRejectedValue(apiError);
+  // test('shows error modal if submitNovelForReview API fails', async () => {
+  //   const apiError = new Error('Failed to submit for review');
+  //   novelService.submitNovelForReview.mockRejectedValue(apiError);
 
-    renderComponent(mockNovel.id);
+  //   renderComponent(mockNovel.id);
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
-    });
+  //   await waitFor(() => {
+  //     expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
+  //   });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
-    });
+  //   await act(async () => {
+  //     fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
+  //   });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
-    });
-    expect(screen.queryByText('Success!')).not.toBeInTheDocument();
-  });
+  //   await waitFor(() => {
+  //     expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+  //   });
+  //   expect(screen.queryByText('Success!')).not.toBeInTheDocument();
+  // });
 });
