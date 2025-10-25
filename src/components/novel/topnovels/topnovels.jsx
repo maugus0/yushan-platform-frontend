@@ -24,7 +24,7 @@ const TopNovels = () => {
         setError(null);
         const response = await axios.get(
           //'https://yushan-backend-staging.up.railway.app/api/ranking/novel',
-          'https://yushan.duckdns.org/api/v1/ranking/novel',
+          '/api/v1/ranking/novel',
           {
             params: {
               page: 0,
