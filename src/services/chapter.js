@@ -66,7 +66,7 @@ const chapterService = {
         params: { page, pageSize },
         headers: authHeader(),
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response) {
         const status = error.response.status;

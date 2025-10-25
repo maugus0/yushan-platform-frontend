@@ -47,8 +47,9 @@ const WriterStoryProfile = () => {
         ]);
 
         setStory(fetchedStory);
-        const newList = chaptersRes.data.chapters || [];
+        const newList = chaptersRes.content || [];
         setChaptersData(newList);
+        console.log('chapterData:', newList);
         setChaptersHasMore(newList.length === PAGE_SIZE);
       } catch (error) {
         setErrorMsg(error.message || 'Failed to load initial data.');
