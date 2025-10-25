@@ -1,6 +1,11 @@
 .writerworkspace-page {
   display: flex;
-  height: 100vh;
+  /* 页面级滚动，覆盖所有屏幕尺寸 */
+  min-height: 100vh;
+  height: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   --sidebar-width: 220px;
 }
 
@@ -12,7 +17,9 @@
   align-items: center;
   margin-left: var(--sidebar-width);
   transition: margin-left 0.2s;
-  overflow-y: auto;
+  /* 由页面容器负责滚动，这里不再限定高度与滚动 */
+  min-height: 0;
+  width: 100%;
 }
 
 .writerworkspace-header {
