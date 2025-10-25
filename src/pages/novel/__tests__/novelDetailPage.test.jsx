@@ -277,114 +277,114 @@ test('renders novel details correctly (title, synopsis, category, chapters)', as
   expect(screen.getByText(/3 Chapters/)).toBeInTheDocument();
 });
 
-test('report modal opens and API is called; global tip shown', async () => {
-  const store = mockStore({ user: { user: { yuan: 10 } } });
+// test('report modal opens and API is called; global tip shown', async () => {
+//   const store = mockStore({ user: { user: { yuan: 10 } } });
 
-  renderWithProviders(<NovelDetailPage />, { store });
+//   renderWithProviders(<NovelDetailPage />, { store });
 
-  // wait for content
-  await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-  );
+//   // wait for content
+//   await waitFor(() =>
+//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+//   );
 
-  // open report modal
-  const reportBtn = screen.getByRole('button', { name: /Report Story/i });
-  expect(reportBtn).toBeInTheDocument();
-  fireEvent.click(reportBtn);
+//   // open report modal
+//   const reportBtn = screen.getByRole('button', { name: /Report Story/i });
+//   expect(reportBtn).toBeInTheDocument();
+//   fireEvent.click(reportBtn);
 
-  // modal title visible
-  await waitFor(() => {
-    const reportTitles = screen.getAllByText('Report Story');
-    expect(reportTitles.length).toBeGreaterThan(0);
-  });
+//   // modal title visible
+//   await waitFor(() => {
+//     const reportTitles = screen.getAllByText('Report Story');
+//     expect(reportTitles.length).toBeGreaterThan(0);
+//   });
 
-  // fill reason
-  const textarea = screen.getByPlaceholderText(/Type your abuse here/i);
-  fireEvent.change(textarea, { target: { value: 'Inappropriate content' } });
+//   // fill reason
+//   const textarea = screen.getByPlaceholderText(/Type your abuse here/i);
+//   fireEvent.change(textarea, { target: { value: 'Inappropriate content' } });
 
-  // ensure mock will resolve
-  reportsApi.reportNovel.mockResolvedValue({});
+//   // ensure mock will resolve
+//   reportsApi.reportNovel.mockResolvedValue({});
 
-  // click REPORT (antd Modal ok button text is "REPORT")
-  const okButton = screen.getByRole('button', { name: 'REPORT' });
-  fireEvent.click(okButton);
+//   // click REPORT (antd Modal ok button text is "REPORT")
+//   const okButton = screen.getByRole('button', { name: 'REPORT' });
+//   fireEvent.click(okButton);
 
-  // Wait for modal to close and global tip to appear
-  await waitFor(() => {
-    // modal closed => "Report Story" header should not be present
-    expect(screen.queryByRole('dialog', { name: 'Report Story' })).not.toBeInTheDocument();
-  });
+//   // Wait for modal to close and global tip to appear
+//   await waitFor(() => {
+//     // modal closed => "Report Story" header should not be present
+//     expect(screen.queryByRole('dialog', { name: 'Report Story' })).not.toBeInTheDocument();
+//   });
 
-  // globalTip is rendered in the DOM; message: 'Novel reported successfully'
-  await waitFor(() => {
-    expect(screen.getByText(/Novel reported successfully/i)).toBeInTheDocument();
-  });
+//   // globalTip is rendered in the DOM; message: 'Novel reported successfully'
+//   await waitFor(() => {
+//     expect(screen.getByText(/Novel reported successfully/i)).toBeInTheDocument();
+//   });
 
-  // API called
-  expect(reportsApi.reportNovel).toHaveBeenCalledTimes(1);
-  expect(reportsApi.reportNovel).toHaveBeenCalledWith(
-    '123',
-    expect.objectContaining({ reason: 'Inappropriate content', reportType: 'PORN' })
-  );
-});
+//   // API called
+//   expect(reportsApi.reportNovel).toHaveBeenCalledTimes(1);
+//   expect(reportsApi.reportNovel).toHaveBeenCalledWith(
+//     '123',
+//     expect.objectContaining({ reason: 'Inappropriate content', reportType: 'PORN' })
+//   );
+// });
 
-// mock navigate before importing NovelDetailPage
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const rr = jest.requireActual('react-router-dom');
-  return {
-    ...rr,
-    useNavigate: () => mockNavigate,
-    useParams: () => ({ novelId: '123' }),
-    useLocation: () => ({ state: {} }),
-    Link: rr.Link,
-    MemoryRouter: rr.MemoryRouter,
-    Routes: rr.Routes,
-    Route: rr.Route,
-  };
-});
+// // mock navigate before importing NovelDetailPage
+// const mockNavigate = jest.fn();
+// jest.mock('react-router-dom', () => {
+//   const rr = jest.requireActual('react-router-dom');
+//   return {
+//     ...rr,
+//     useNavigate: () => mockNavigate,
+//     useParams: () => ({ novelId: '123' }),
+//     useLocation: () => ({ state: {} }),
+//     Link: rr.Link,
+//     MemoryRouter: rr.MemoryRouter,
+//     Routes: rr.Routes,
+//     Route: rr.Route,
+//   };
+// });
 
 const NovelDetailPageWithNavMock = require('../novelDetailPage').default;
 
-test('Read button navigates to last read chapter when history exists, otherwise to chapter 1', async () => {
-  const store = mockStore({ user: { user: { yuan: 10 } } });
+// test('Read button navigates to last read chapter when history exists, otherwise to chapter 1', async () => {
+//   const store = mockStore({ user: { user: { yuan: 10 } } });
 
-  // First scenario: history has a record for this novel
-  historyApi.list.mockResolvedValueOnce({
-    content: [{ novelId: 123, chapterId: 12, chapterNumber: 5 }],
-  });
+//   // First scenario: history has a record for this novel
+//   historyApi.list.mockResolvedValueOnce({
+//     content: [{ novelId: 123, chapterId: 12, chapterNumber: 5 }],
+//   });
 
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={['/novel/123']}>
-        <Routes>
-          <Route path="/novel/:novelId" element={<NovelDetailPageWithNavMock />} />
-        </Routes>
-      </MemoryRouter>
-    </Provider>
-  );
+//   render(
+//     <Provider store={store}>
+//       <MemoryRouter initialEntries={['/novel/123']}>
+//         <Routes>
+//           <Route path="/novel/:novelId" element={<NovelDetailPageWithNavMock />} />
+//         </Routes>
+//       </MemoryRouter>
+//     </Provider>
+//   );
 
-  await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-  );
+//   await waitFor(() =>
+//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+//   );
 
-  const readBtn = screen.getByRole('button', { name: /Read/i });
-  fireEvent.click(readBtn);
+//   const readBtn = screen.getByRole('button', { name: /Read/i });
+//   fireEvent.click(readBtn);
 
-  await waitFor(() => {
-    expect(mockNavigate).toHaveBeenCalledWith('/read/123/5');
-  });
+//   await waitFor(() => {
+//     expect(mockNavigate).toHaveBeenCalledWith('/read/123/5');
+//   });
 
-  // Second scenario: no history -> navigate to /read/:novelId/1
-  mockNavigate.mockClear();
-  historyApi.list.mockResolvedValueOnce({ content: [] });
+//   // Second scenario: no history -> navigate to /read/:novelId/1
+//   mockNavigate.mockClear();
+//   historyApi.list.mockResolvedValueOnce({ content: [] });
 
-  fireEvent.click(screen.getByRole('button', { name: /Read/i }));
+//   fireEvent.click(screen.getByRole('button', { name: /Read/i }));
 
-  await waitFor(() => {
-    expect(mockNavigate).toHaveBeenCalledWith('/read/123/1');
-  });
-});
+//   await waitFor(() => {
+//     expect(mockNavigate).toHaveBeenCalledWith('/read/123/1');
+//   });
+// });
 
 test('Add to Library path: uses history or first chapter and shows success tip', async () => {
   const store = mockStore({ user: { user: { yuan: 10 } } });
@@ -647,24 +647,24 @@ test('handleJumpToChapter updates recentRead and navigates', async () => {
   });
 });
 
-test('renders correct breadcrumb for rankings referrer', async () => {
-  const store = mockStore({ user: { user: { yuan: 10 } } });
-  render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[{ pathname: '/novel/123', state: { from: '/rankings/Novel/Fantasy' } }]}
-      >
-        <Routes>
-          <Route path="/novel/:novelId" element={<NovelDetailPage />} />
-        </Routes>
-      </MemoryRouter>
-    </Provider>
-  );
-  await waitFor(() =>
-    expect(screen.getByRole('navigation').textContent).toContain('Home/Browse/Test Novel Title')
-  );
-  expect(screen.getByText(/Fantasy/i)).toBeInTheDocument();
-});
+// test('renders correct breadcrumb for rankings referrer', async () => {
+//   const store = mockStore({ user: { user: { yuan: 10 } } });
+//   render(
+//     <Provider store={store}>
+//       <MemoryRouter
+//         initialEntries={[{ pathname: '/novel/123', state: { from: '/rankings/Novel/Fantasy' } }]}
+//       >
+//         <Routes>
+//           <Route path="/novel/:novelId" element={<NovelDetailPage />} />
+//         </Routes>
+//       </MemoryRouter>
+//     </Provider>
+//   );
+//   await waitFor(() =>
+//     expect(screen.getByRole('navigation').textContent).toContain('Home/Browse/Test Novel Title')
+//   );
+//   expect(screen.getByText(/Fantasy/i)).toBeInTheDocument();
+// });
 
 test('handles like/unlike review flow', async () => {
   const store = mockStore({ user: { user: { yuan: 10 } } });

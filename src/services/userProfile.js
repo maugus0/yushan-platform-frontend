@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const API_URL =
-  process.env.REACT_APP_API_URL || 'https://yushan-backend-staging.up.railway.app/api';
+  //process.env.REACT_APP_API_URL || 'https://yushan-backend-staging.up.railway.app/api';
+  process.env.REACT_APP_API_URL || '/api/v1';
 
 // Map string gender from API to numeric values
 const GENDER_MAP = {
@@ -43,9 +44,36 @@ const userProfileService = {
       const response = await axios.get(`${API_URL}/users/me`);
 
       if (response.data.code === 200 && response.data.data) {
+        // merge gamification stats (level, exp, yuan) since /users/me no longer returns them
+        const userData = { ...response.data.data };
+
+        try {
+          const statsRes = await axios.get(`${API_URL}/gamification/stats/me`);
+          // Accept responses that include data (some endpoints return code 0, others 200)
+          if (statsRes?.data?.data) {
+            const stats = statsRes.data.data;
+            userData.level = stats.level ?? 0;
+            userData.exp = stats.currentExp ?? 0;
+            userData.yuan = stats.yuanBalance ?? 0;
+          } else {
+            userData.level = userData.level ?? 0;
+            userData.exp = userData.exp ?? 0;
+            userData.yuan = userData.yuan ?? 0;
+          }
+        } catch (e) {
+          // if gamification call fails, fallback to zeros
+          userData.level = userData.level ?? 0;
+          userData.exp = userData.exp ?? 0;
+          userData.yuan = userData.yuan ?? 0;
+        }
+
+        // readTime and readBookNum not provided by backend anymore — set to 0
+        userData.readTime = 0;
+        userData.readBookNum = 0;
+
         return {
           ...response.data,
-          data: transformUserData(response.data.data),
+          data: transformUserData(userData),
         };
       }
 
