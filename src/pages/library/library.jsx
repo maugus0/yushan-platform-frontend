@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import './library.css';
 import libraryService from '../../services/library';
 import historyService from '../../services/history';
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
+import fallbackImage from '../../assets/images/novel_default.png';
 
 const { Title, Text } = Typography;
 
@@ -47,7 +50,6 @@ const Library = () => {
         const content = novelsRes.data.content || [];
         setNovels((prev) => (novelsPage === 0 ? content : [...prev, ...content]));
         setNovelsHasMore(content.length === PAGE_SIZE);
-        console.log('Fetched library novels:', content);
       } catch (error) {
         setErrorMsg(error.message || 'Failed to load library.');
         setErrorModal(true);
@@ -150,9 +152,7 @@ const Library = () => {
     }
   };
 
-  const isValidBase64Url = (url) => {
-    return /^data:image\/(jpeg|png|jpg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(url);
-  };
+  const getCoverSrc = (url) => processImageUrl(url, IMAGE_BASE_URL, fallbackImage);
 
   const renderLibraryList = () => {
     if (loading)
@@ -181,13 +181,14 @@ const Library = () => {
               >
                 <div className="library-novel-img-wrapper">
                   <img
-                    src={
-                      novel.novelCover && isValidBase64Url(novel.novelCover)
-                        ? novel.novelCover
-                        : require('../../assets/images/novel_default.png')
-                    }
+                    src={getCoverSrc(novel.novelCover)}
                     alt={novel.novelTitle}
                     className="library-novel-img"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== fallbackImage) {
+                        e.currentTarget.src = fallbackImage;
+                      }
+                    }}
                   />
                   {editMode && (
                     <div className="library-novel-mask">
@@ -241,13 +242,14 @@ const Library = () => {
               >
                 <div className="history-chapter-content">
                   <img
-                    src={
-                      item.novelCover && isValidBase64Url(item.novelCover)
-                        ? item.novelCover
-                        : require('../../assets/images/novel_default.png')
-                    }
+                    src={getCoverSrc(item.novelCover)}
                     alt={item.novelTitle}
                     className="history-novel-cover"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== fallbackImage) {
+                        e.currentTarget.src = fallbackImage;
+                      }
+                    }}
                   />
                   <div className="history-details">
                     <div className="history-novel-title">{item.novelTitle}</div>

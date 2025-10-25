@@ -8,6 +8,9 @@ import ResultsList from '../../components/novel/browse/resultslist';
 import GenreSidebar from '../../components/novel/browse/genresidebar';
 import novelService from '../../services/novel';
 import './browse.css';
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
+import fallbackImage from '../../assets/images/novel_default.png';
 
 const { Title } = Typography;
 
@@ -228,27 +231,36 @@ const BrowsePage = () => {
         // If filters.status is null, show all novels (no filtering)
 
         // Transform API response to match expected format
-        const transformedNovels = data.map((novel) => ({
-          id: novel.id,
-          title: novel.title,
-          author: novel.authorUsername || 'Unknown Author',
-          cover: novel.coverImgUrl || null, // Let NovelCard handle null cover
-          genres: [novel.categoryName],
-          status: novel.isCompleted ? 'Completed' : 'Ongoing',
-          description: novel.synopsis || 'No description available.',
-          stats: {
-            chapters: novel.chapterCnt || 0,
-            popularity: novel.viewCnt || 0,
-            rating: novel.avgRating || 0,
-          },
-          createdAt: new Date(novel.createTime || novel.publishTime).getTime(),
-          lead: 'male', // Default since API doesn't provide this
-        }));
+        const transformedNovels = data.map((novel) => {
+          const cover = processImageUrl(novel.coverImgUrl, IMAGE_BASE_URL, fallbackImage);
+          return {
+            id: novel.id,
+            title: novel.title,
+            author: novel.authorUsername || 'Unknown Author',
+            cover,
+            coverUrl: cover,
+            genres: [novel.categoryName],
+            status: novel.isCompleted ? 'Completed' : 'Ongoing',
+            description: novel.synopsis || 'No description available.',
+            stats: {
+              chapters: novel.chapterCnt || 0,
+              popularity: novel.viewCnt || 0,
+              rating: novel.avgRating || 0,
+            },
+            createdAt: new Date(novel.createTime || novel.publishTime).getTime(),
+            lead: 'male',
+          };
+        });
 
         setNovels(transformedNovels);
+        if (transformedNovels.length) {
+          // console.debug(
+          //   '[Browse] first covers:',
+          //   transformedNovels.slice(0, 5).map((n) => n.cover)
+          // );
+        }
         setTotalNovels(response.totalElements || 0);
       } catch (error) {
-        console.error('Failed to fetch novels:', error);
         setSoftError('Failed to load novels. Please try again.');
       } finally {
         setLoading(false);

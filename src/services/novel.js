@@ -248,8 +248,8 @@ const novelService = {
   },
   async deleteNovelById(novelId) {
     try {
-      const response = await axios.post(
-        `${BASE}/novels/${novelId}/archive`,
+      const response = await axios.delete(
+        `${BASE}/novels/${novelId}`,
         {},
         { headers: authHeader() }
       );

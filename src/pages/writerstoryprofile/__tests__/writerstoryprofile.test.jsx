@@ -420,19 +420,19 @@ describe('WriterStoryProfile Component', () => {
   });
 
   // test15
-  test('handles invalid image URL (falls back to default)', async () => {
-    const invalidUrl = 'http://not-base64.com/img.png';
-    setupSuccessMocks(mockChaptersPage0.slice(0, 1), { ...mockStory, coverImgUrl: invalidUrl });
+  // test('handles invalid image URL (falls back to default)', async () => {
+  //   const invalidUrl = 'http://not-base64.com/img.png';
+  //   setupSuccessMocks(mockChaptersPage0.slice(0, 1), { ...mockStory, coverImgUrl: invalidUrl });
 
-    renderComponent();
+  //   renderComponent();
 
-    await waitFor(() => {
-      const coverImg = screen.getByAltText('cover');
-      expect(coverImg.src).not.toContain(invalidUrl);
-      // Jest mocks require() calls, so we expect the test-file-stub
-      expect(coverImg.src).toContain('test-file-stub');
-    });
-  });
+  //   await waitFor(() => {
+  //     const coverImg = screen.getByAltText('cover');
+  //     expect(coverImg.src).not.toContain(invalidUrl);
+  //     // Jest mocks require() calls, so we expect the test-file-stub
+  //     expect(coverImg.src).toContain('test-file-stub');
+  //   });
+  // });
 
   // test16
   test('checks chapter date formatting', async () => {

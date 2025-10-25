@@ -10,6 +10,8 @@ import {
 import './writernavbar.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../store/UserContext';
+import { processUserAvatar, getGenderBasedAvatar } from '../../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../../config/images';
 
 const { Sider } = Layout;
 
@@ -18,6 +20,10 @@ const WriterNavbar = () => {
   const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(window.innerWidth < 900);
+  const [avatarSrc, setAvatarSrc] = useState('');
+
+  // 统一用户名展示，避免重复与不一致
+  const displayName = (user?.username && String(user.username).trim()) || 'User';
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,13 +36,25 @@ const WriterNavbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setAvatarSrc(getGenderBasedAvatar());
+      return;
+    }
+    const processed = processUserAvatar(user.avatarUrl, user.gender, IMAGE_BASE_URL);
+    setAvatarSrc(processed);
+  }, [user]);
+
+  const handleAvatarError = (e) => {
+    const fallback = getGenderBasedAvatar(user?.gender);
+    if (e?.target && e.target.src !== fallback) {
+      e.target.src = fallback;
+    }
+    return true;
+  };
+
   return (
-    <Sider
-      className="writer-sider"
-      width={220}
-      collapsed={collapsed}
-      collapsedWidth={64} // 确保折叠宽度和 CSS 对应
-    >
+    <Sider className="writer-sider" width={220} collapsed={collapsed} collapsedWidth={64}>
       <div className="writer-navbar-header">
         <Button
           type="text"
@@ -61,7 +79,6 @@ const WriterNavbar = () => {
             size="large"
             onClick={() => navigate('/writerdashboard')}
           >
-            {/* 修改点：当不折叠时才渲染文字 */}
             {!collapsed && 'Dashboard'}
           </Button>
         </Tooltip>
@@ -79,7 +96,6 @@ const WriterNavbar = () => {
             size="large"
             onClick={() => navigate('/writerworkspace')}
           >
-            {/* 修改点：当不折叠时才渲染文字 */}
             {!collapsed && 'Workspace'}
           </Button>
         </Tooltip>
@@ -97,21 +113,22 @@ const WriterNavbar = () => {
             size="large"
             onClick={() => navigate('/writerinteraction')}
           >
-            {/* 修改点：当不折叠时才渲染文字 */}
             {!collapsed && 'Interaction'}
           </Button>
         </Tooltip>
       </div>
 
       <div className="writer-navbar-footer writer-navbar-footer-fixed">
-        <Avatar
-          size={40}
-          src={user.avatarUrl}
-          icon={<UserOutlined />}
-          className="writer-navbar-avatar"
-        />
-        {/* 修改点：当不折叠时才渲染用户名 */}
-        {!collapsed && <span className="writer-navbar-username">{user.username}</span>}
+        <Tooltip title={collapsed ? displayName : ''} placement="right">
+          <Avatar
+            size={40}
+            src={avatarSrc}
+            icon={<UserOutlined />}
+            className="writer-navbar-avatar"
+            onError={handleAvatarError}
+          />
+        </Tooltip>
+        {!collapsed && <span className="writer-navbar-username">{displayName}</span>}
       </div>
     </Sider>
   );

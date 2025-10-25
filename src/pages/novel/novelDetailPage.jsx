@@ -32,8 +32,9 @@ import reportsApi from '../../services/reports';
 import libraryApi from '../../services/library';
 import historyApi from '../../services/history';
 import userProfileService from '../../services/userProfile'; // Assume this service exists
-import { toAbsoluteUrl } from '../../services/_http';
 import gamificationApi from '../../services/gamification'; // <-- added
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
 import testImg from '../../assets/images/novel_default.png'; // keep fallback
 import PowerStatusVote from '../../components/novel/novelcard/powerStatusVote';
 import ReviewSection from '../../components/novel/novelcard/reviewSection';
@@ -150,8 +151,9 @@ export default function NovelDetailPage() {
           synopsis: data?.synopsis ?? '',
           remainedYuan: data?.remainedYuan, // Ensure votesLeft is initialized
         });
-        const abs = toAbsoluteUrl(data?.coverImgUrl);
-        setCoverUrl(abs || testImg);
+
+        const abs = processImageUrl(data?.coverImgUrl, IMAGE_BASE_URL, testImg);
+        setCoverUrl(abs);
       } catch (err) {
         if (!cancelled) {
           setError(err?.response?.data?.message || err?.message || 'Failed to load novel details');

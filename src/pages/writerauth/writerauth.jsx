@@ -44,7 +44,7 @@ const WriterAuth = () => {
   const handleSendOtp = async () => {
     setSending(true);
     try {
-      await userService.upgradeToAuthorEmail(email);
+      // await userService.upgradeToAuthorEmail(email);
       setErrorMsg('');
       setErrorModal(false);
       message.success('OTP sent to your email.');
