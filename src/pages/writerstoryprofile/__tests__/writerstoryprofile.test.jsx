@@ -194,7 +194,6 @@ const renderComponent = (storyId = 'story-123') => {
 
 const setupSuccessMocks = (chapters = mockChaptersPage0.slice(0, 2), story = mockStory) => {
   NovelService.getNovelById.mockResolvedValue(story);
-  // 初次加载使用 { content: [...] }，与组件的首次解析一致
   ChapterService.getChapterByNovelId.mockResolvedValue({
     content: chapters,
   });
@@ -363,7 +362,6 @@ describe('WriterStoryProfile Component', () => {
   // test12
   test('handles error on loading more chapters', async () => {
     // First call returns 10 chapters
-    // 初次加载：{ content: [...] }
     ChapterService.getChapterByNovelId.mockResolvedValueOnce({
       content: mockChaptersPage0,
     });
@@ -391,7 +389,6 @@ describe('WriterStoryProfile Component', () => {
   // test13
   test('renders "No chapters" when chaptersData is empty after load', async () => {
     NovelService.getNovelById.mockResolvedValue(mockStory);
-    // 初次加载：返回空 content
     ChapterService.getChapterByNovelId.mockResolvedValue({
       content: [],
     });
