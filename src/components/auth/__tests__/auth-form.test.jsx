@@ -2,7 +2,6 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AuthForm from '../../auth/auth-form';
 import authService from '../../../services/auth';
-import dayjs from 'dayjs';
 
 jest.mock('../../../services/auth', () => ({
   sendVerificationEmail: jest.fn(),
