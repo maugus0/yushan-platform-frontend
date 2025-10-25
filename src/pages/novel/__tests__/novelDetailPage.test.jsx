@@ -1,281 +1,281 @@
-// jest.mock('../../../services/_http', () => {
-//   const mocked = {
-//     // make toAbsoluteUrl a jest.fn so tests can re-mock it later
-//     toAbsoluteUrl: jest.fn((u) => (u ? `http://cdn${u}` : undefined)),
-//     // http is usually axios instance; provide interceptors stubs so module init won't crash
-//     http: {
-//       interceptors: {
-//         request: { use: jest.fn() },
-//         response: { use: jest.fn() },
-//       },
-//     },
-//   };
-//   return mocked;
-// });
+jest.mock('../../../services/_http', () => {
+  const mocked = {
+    // make toAbsoluteUrl a jest.fn so tests can re-mock it later
+    toAbsoluteUrl: jest.fn((u) => (u ? `http://cdn${u}` : undefined)),
+    // http is usually axios instance; provide interceptors stubs so module init won't crash
+    http: {
+      interceptors: {
+        request: { use: jest.fn() },
+        response: { use: jest.fn() },
+      },
+    },
+  };
+  return mocked;
+});
 
-// // Optionally mock axios early as well if other modules import it directly
-// jest.mock('axios', () => ({
-//   create: () => ({}),
-//   get: jest.fn(),
-//   post: jest.fn(),
-//   put: jest.fn(),
-//   delete: jest.fn(),
-// }));
+// Optionally mock axios early as well if other modules import it directly
+jest.mock('axios', () => ({
+  create: () => ({}),
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
 
-// // Ensure AntD responsive hooks do not throw in JSDOM (fixes responsiveObserver errors)
-// jest.mock('antd/lib/grid/hooks/useBreakpoint', () => () => ({
-//   xs: true,
-//   sm: true,
-//   md: true,
-//   lg: true,
-//   xl: true,
-//   xxl: true,
-// }));
+// Ensure AntD responsive hooks do not throw in JSDOM (fixes responsiveObserver errors)
+jest.mock('antd/lib/grid/hooks/useBreakpoint', () => () => ({
+  xs: true,
+  sm: true,
+  md: true,
+  lg: true,
+  xl: true,
+  xxl: true,
+}));
 
-// jest.mock('antd/lib/_util/responsiveObserver', () => ({
-//   __esModule: true,
-//   default: () => ({
-//     subscribe: (listener) => {
-//       try {
-//         listener({ xs: true, sm: true, md: true, lg: true, xl: true, xxl: true });
-//       } catch (e) {
-//         // ignore listener errors in test
-//       }
-//       return () => {};
-//     },
-//     unsubscribe: () => {},
-//     dispatch: () => {},
-//   }),
-// }));
+jest.mock('antd/lib/_util/responsiveObserver', () => ({
+  __esModule: true,
+  default: () => ({
+    subscribe: (listener) => {
+      try {
+        listener({ xs: true, sm: true, md: true, lg: true, xl: true, xxl: true });
+      } catch (e) {
+        // ignore listener errors in test
+      }
+      return () => {};
+    },
+    unsubscribe: () => {},
+    dispatch: () => {},
+  }),
+}));
 
-// // Increase default Jest timeout for this file to avoid "Exceeded timeout of 5000 ms" failures
-// jest.setTimeout(15000);
+// Increase default Jest timeout for this file to avoid "Exceeded timeout of 5000 ms" failures
+jest.setTimeout(15000);
 
-// // Now safe to import other modules
-// import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
-// import '@testing-library/jest-dom';
-// import NovelDetailPage from '../novelDetailPage';
-// import { MemoryRouter, Routes, Route } from 'react-router-dom';
-// import configureMockStore from 'redux-mock-store';
-// import { thunk } from 'redux-thunk';
-// import { Provider } from 'react-redux';
+// Now safe to import other modules
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import NovelDetailPage from '../novelDetailPage';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import configureMockStore from 'redux-mock-store';
+import { thunk } from 'redux-thunk';
+import { Provider } from 'react-redux';
 
-// // =====================
-// // Mock the services (the rest)
-// // NOTE: Do NOT re-mock ../../../services/_http here (we already mocked above).
-// // =====================
-// jest.mock('../../../services/novels');
-// jest.mock('../../../services/reviews');
-// jest.mock('../../../services/reports');
-// jest.mock('../../../services/library');
-// jest.mock('../../../services/history');
-// jest.mock('../../../services/userProfile');
-// // DO NOT call jest.mock('../../../services/_http') here again
-// jest.mock('axios');
+// =====================
+// Mock the services (the rest)
+// NOTE: Do NOT re-mock ../../../services/_http here (we already mocked above).
+// =====================
+jest.mock('../../../services/novels');
+jest.mock('../../../services/reviews');
+jest.mock('../../../services/reports');
+jest.mock('../../../services/library');
+jest.mock('../../../services/history');
+jest.mock('../../../services/userProfile');
+// DO NOT call jest.mock('../../../services/_http') here again
+jest.mock('axios');
 
-// import novelsApi from '../../../services/novels';
-// import reviewsApi from '../../../services/reviews';
-// import reportsApi from '../../../services/reports';
-// import libraryApi from '../../../services/library';
-// import historyApi from '../../../services/history';
-// import userProfileService from '../../../services/userProfile';
-// import { toAbsoluteUrl } from '../../../services/_http';
-// import axios from 'axios';
+import novelsApi from '../../../services/novels';
+import reviewsApi from '../../../services/reviews';
+import reportsApi from '../../../services/reports';
+import libraryApi from '../../../services/library';
+import historyApi from '../../../services/history';
+import userProfileService from '../../../services/userProfile';
+import { toAbsoluteUrl } from '../../../services/_http';
+import axios from 'axios';
 
-// // =====================
-// // Mock child components
-// // - PowerStatusVote: render vote button that calls onVote
-// // - ReviewSection: render simple container to show received props
-// // =====================
-// jest.mock('../../../components/novel/novelcard/powerStatusVote', () => {
-//   const PowerStatusVoteMock = (props) => {
-//     // 以前是匿名函数
-//     // props: { ranking, voteCount, votesLeft, onVote, loading, disableVote, rankType, message }
-//     const { votesLeft = 0, onVote } = props;
-//     return (
-//       <div data-testid="power-status-vote">
-//         <div>RANK:{String(props.ranking)}</div>
-//         <div>VOTES:{props.voteCount}</div>
-//         <div>YuanLeft:{votesLeft}</div>
-//         <button
-//           data-testid="power-vote-btn"
-//           onClick={() => {
-//             if (onVote) onVote();
-//           }}
-//         >
-//           VOTE
-//         </button>
-//       </div>
-//     );
-//   };
-//   PowerStatusVoteMock.displayName = 'PowerStatusVote'; // <-- 修复: 添加 displayName
-//   return PowerStatusVoteMock;
-// });
+// =====================
+// Mock child components
+// - PowerStatusVote: render vote button that calls onVote
+// - ReviewSection: render simple container to show received props
+// =====================
+jest.mock('../../../components/novel/novelcard/powerStatusVote', () => {
+  const PowerStatusVoteMock = (props) => {
+    // 以前是匿名函数
+    // props: { ranking, voteCount, votesLeft, onVote, loading, disableVote, rankType, message }
+    const { votesLeft = 0, onVote } = props;
+    return (
+      <div data-testid="power-status-vote">
+        <div>RANK:{String(props.ranking)}</div>
+        <div>VOTES:{props.voteCount}</div>
+        <div>YuanLeft:{votesLeft}</div>
+        <button
+          data-testid="power-vote-btn"
+          onClick={() => {
+            if (onVote) onVote();
+          }}
+        >
+          VOTE
+        </button>
+      </div>
+    );
+  };
+  PowerStatusVoteMock.displayName = 'PowerStatusVote'; // <-- 修复: 添加 displayName
+  return PowerStatusVoteMock;
+});
 
-// jest.mock('../../../components/novel/novelcard/reviewSection', () => {
-//   const ReviewSectionMock = (props) => {
-//     // 以前是匿名函数
-//     return (
-//       <div data-testid="review-section">
-//         <div>Rating:{props.novelRating}</div>
-//         <div>ReviewsCount:{props.total}</div>
-//         <div data-testid="paged-reviews">{JSON.stringify(props.pagedReviews)}</div>
-//         <button
-//           data-testid="open-review-modal"
-//           onClick={() => props.handleWriteReview && props.handleWriteReview()}
-//         >
-//           WRITE
-//         </button>
-//       </div>
-//     );
-//   };
-//   ReviewSectionMock.displayName = 'ReviewSection'; // <-- 修复: 添加 displayName
-//   return ReviewSectionMock;
-// });
+jest.mock('../../../components/novel/novelcard/reviewSection', () => {
+  const ReviewSectionMock = (props) => {
+    // 以前是匿名函数
+    return (
+      <div data-testid="review-section">
+        <div>Rating:{props.novelRating}</div>
+        <div>ReviewsCount:{props.total}</div>
+        <div data-testid="paged-reviews">{JSON.stringify(props.pagedReviews)}</div>
+        <button
+          data-testid="open-review-modal"
+          onClick={() => props.handleWriteReview && props.handleWriteReview()}
+        >
+          WRITE
+        </button>
+      </div>
+    );
+  };
+  ReviewSectionMock.displayName = 'ReviewSection'; // <-- 修复: 添加 displayName
+  return ReviewSectionMock;
+});
 
-// // =====================
-// // Helper: render with providers
-// // =====================
-// const middlewares = [thunk];
-// const mockStore = configureMockStore(middlewares);
+// =====================
+// Helper: render with providers
+// =====================
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
-// const renderWithProviders = (ui, { store, route = '/novel/123' } = {}) => {
-//   return render(
-//     <Provider store={store}>
-//       <MemoryRouter initialEntries={[route]}>
-//         <Routes>
-//           <Route path="/novel/:novelId" element={ui} />
-//         </Routes>
-//       </MemoryRouter>
-//     </Provider>
-//   );
-// };
+const renderWithProviders = (ui, { store, route = '/novel/123' } = {}) => {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[route]}>
+        <Routes>
+          <Route path="/novel/:novelId" element={ui} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>
+  );
+};
 
-// // =====================
-// // Mock data (based on docx shapes)
-// // =====================
-// const mockNovelDetail = {
-//   id: 123,
-//   title: 'Test Novel Title',
-//   categoryName: 'Fantasy',
-//   chapterCnt: 3,
-//   viewCnt: 1000,
-//   voteCnt: 42,
-//   authorUsername: 'AuthorX',
-//   authorId: 'author-uuid-1',
-//   avgRating: 4.2,
-//   reviewCnt: 2,
-//   synopsis: 'This is a test synopsis for the novel.',
-//   remainedYuan: 10,
-//   coverImgUrl: '/cover.png',
-// };
+// =====================
+// Mock data (based on docx shapes)
+// =====================
+const mockNovelDetail = {
+  id: 123,
+  title: 'Test Novel Title',
+  categoryName: 'Fantasy',
+  chapterCnt: 3,
+  viewCnt: 1000,
+  voteCnt: 42,
+  authorUsername: 'AuthorX',
+  authorId: 'author-uuid-1',
+  avgRating: 4.2,
+  reviewCnt: 2,
+  synopsis: 'This is a test synopsis for the novel.',
+  remainedYuan: 10,
+  coverImgUrl: '/cover.png',
+};
 
-// const mockChaptersFull = {
-//   chapters: [
-//     { chapterId: 11, chapterNumber: 1, title: 'Chapter One' },
-//     { chapterId: 12, chapterNumber: 2, title: 'Chapter Two' },
-//   ],
-// };
+const mockChaptersFull = {
+  chapters: [
+    { chapterId: 11, chapterNumber: 1, title: 'Chapter One' },
+    { chapterId: 12, chapterNumber: 2, title: 'Chapter Two' },
+  ],
+};
 
-// const mockReviewsPage = {
-//   content: [
-//     {
-//       id: 1,
-//       rating: 5,
-//       content: 'Great!',
-//       likeCnt: 0,
-//       liked: false,
-//       createTime: new Date().toISOString(),
-//     },
-//   ],
-//   totalElements: 1,
-// };
+const mockReviewsPage = {
+  content: [
+    {
+      id: 1,
+      rating: 5,
+      content: 'Great!',
+      likeCnt: 0,
+      liked: false,
+      createTime: new Date().toISOString(),
+    },
+  ],
+  totalElements: 1,
+};
 
-// // =====================
-// // Setup default mocks
-// // =====================
-// beforeEach(() => {
-//   // Mock window.matchMedia for antd components (and others) that use it
-//   Object.defineProperty(window, 'matchMedia', {
-//     writable: true,
-//     value: jest.fn().mockImplementation((query) => ({
-//       matches: false,
-//       media: query,
-//       onchange: null,
-//       addListener: jest.fn(), // deprecated
-//       removeListener: jest.fn(), // deprecated
-//       addEventListener: jest.fn(),
-//       removeEventListener: jest.fn(),
-//       dispatchEvent: jest.fn(),
-//     })),
-//   });
+// =====================
+// Setup default mocks
+// =====================
+beforeEach(() => {
+  // Mock window.matchMedia for antd components (and others) that use it
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(), // deprecated
+      removeListener: jest.fn(), // deprecated
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  });
 
-//   // novelsApi
-//   novelsApi.getDetail.mockResolvedValue(mockNovelDetail);
-//   novelsApi.getChaptersFull.mockResolvedValue(mockChaptersFull);
-//   if (novelsApi.getChapters) {
-//     novelsApi.getChapters.mockResolvedValue({ chapters: mockChaptersFull.chapters });
-//   }
-//   novelsApi.vote && novelsApi.vote.mockResolvedValue({ remainedYuan: 5 });
+  // novelsApi
+  novelsApi.getDetail.mockResolvedValue(mockNovelDetail);
+  novelsApi.getChaptersFull.mockResolvedValue(mockChaptersFull);
+  if (novelsApi.getChapters) {
+    novelsApi.getChapters.mockResolvedValue({ chapters: mockChaptersFull.chapters });
+  }
+  novelsApi.vote && novelsApi.vote.mockResolvedValue({ remainedYuan: 5 });
 
-//   // reviews
-//   reviewsApi.listByNovel &&
-//     reviewsApi.listByNovel.mockResolvedValue({
-//       content: mockReviewsPage.content,
-//       totalElements: mockReviewsPage.totalElements,
-//     });
-//   reviewsApi.create && reviewsApi.create.mockResolvedValue({});
-//   reviewsApi.like && reviewsApi.like.mockResolvedValue({ likeCnt: 1 });
-//   reviewsApi.unlike && reviewsApi.unlike.mockResolvedValue({ likeCnt: 0 });
+  // reviews
+  reviewsApi.listByNovel &&
+    reviewsApi.listByNovel.mockResolvedValue({
+      content: mockReviewsPage.content,
+      totalElements: mockReviewsPage.totalElements,
+    });
+  reviewsApi.create && reviewsApi.create.mockResolvedValue({});
+  reviewsApi.like && reviewsApi.like.mockResolvedValue({ likeCnt: 1 });
+  reviewsApi.unlike && reviewsApi.unlike.mockResolvedValue({ likeCnt: 0 });
 
-//   // library
-//   libraryApi.check && libraryApi.check.mockResolvedValue(false);
-//   libraryApi.add && libraryApi.add.mockResolvedValue({});
-//   libraryApi.remove && libraryApi.remove.mockResolvedValue({});
+  // library
+  libraryApi.check && libraryApi.check.mockResolvedValue(false);
+  libraryApi.add && libraryApi.add.mockResolvedValue({});
+  libraryApi.remove && libraryApi.remove.mockResolvedValue({});
 
-//   // history
-//   // default: no history content
-//   historyApi.list && historyApi.list.mockResolvedValue({ content: [] });
-//   historyApi.recordRead && historyApi.recordRead.mockResolvedValue({});
+  // history
+  // default: no history content
+  historyApi.list && historyApi.list.mockResolvedValue({ content: [] });
+  historyApi.recordRead && historyApi.recordRead.mockResolvedValue({});
 
-//   // reports
-//   reportsApi.reportNovel && reportsApi.reportNovel.mockResolvedValue({});
+  // reports
+  reportsApi.reportNovel && reportsApi.reportNovel.mockResolvedValue({});
 
-//   // userProfile
-//   userProfileService.getCurrentUser &&
-//     userProfileService.getCurrentUser.mockResolvedValue({ uuid: 'me-uuid', username: 'me' });
+  // userProfile
+  userProfileService.getCurrentUser &&
+    userProfileService.getCurrentUser.mockResolvedValue({ uuid: 'me-uuid', username: 'me' });
 
-//   // toAbsoluteUrl (we made this a jest.fn earlier)
-//   toAbsoluteUrl.mockImplementation((u) => (u ? `http://cdn${u}` : undefined));
+  // toAbsoluteUrl (we made this a jest.fn earlier)
+  toAbsoluteUrl.mockImplementation((u) => (u ? `http://cdn${u}` : undefined));
 
-//   // axios (vote ranking)
-//   axios.get.mockResolvedValue({ data: { data: {}, message: '' } });
-// });
+  // axios (vote ranking)
+  axios.get.mockResolvedValue({ data: { data: {}, message: '' } });
+});
 
-// afterEach(() => {
-//   jest.clearAllMocks();
-// });
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-// // =====================
-// // Tests
-// // =====================
+// =====================
+// Tests
+// =====================
 
-// test('renders novel details correctly (title, synopsis, category, chapters)', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('renders novel details correctly (title, synopsis, category, chapters)', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   // loading spinner shown initially (antd Spin role may vary; instead wait for resolved title)
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  // loading spinner shown initially (antd Spin role may vary; instead wait for resolved title)
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // assertions
-//   expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument();
-//   expect(screen.getByText('This is a test synopsis for the novel.')).toBeInTheDocument();
-//   expect(screen.getByText('Fantasy')).toBeInTheDocument();
-//   expect(screen.getByText(/3 Chapters/)).toBeInTheDocument();
-// });
+  // assertions
+  expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument();
+  expect(screen.getByText('This is a test synopsis for the novel.')).toBeInTheDocument();
+  expect(screen.getByText('Fantasy')).toBeInTheDocument();
+  expect(screen.getByText(/3 Chapters/)).toBeInTheDocument();
+});
 
 // test('report modal opens and API is called; global tip shown', async () => {
 //   const store = mockStore({ user: { user: { yuan: 10 } } });
@@ -344,7 +344,7 @@
 //   };
 // });
 
-// const NovelDetailPageWithNavMock = require('../novelDetailPage').default;
+const NovelDetailPageWithNavMock = require('../novelDetailPage').default;
 
 // test('Read button navigates to last read chapter when history exists, otherwise to chapter 1', async () => {
 //   const store = mockStore({ user: { user: { yuan: 10 } } });
@@ -386,266 +386,266 @@
 //   });
 // });
 
-// test('Add to Library path: uses history or first chapter and shows success tip', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('Add to Library path: uses history or first chapter and shows success tip', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // For add to library, handleAddOrRemoveLibrary tries historyApi.list and expects different shapes.
-//   // We'll mock historyApi.list to return .data.content for this call (code checks historyRes.data.content in one branch).
-//   historyApi.list.mockResolvedValueOnce({ data: { content: [{ novelId: 123, chapterId: 11 }] } });
+  // For add to library, handleAddOrRemoveLibrary tries historyApi.list and expects different shapes.
+  // We'll mock historyApi.list to return .data.content for this call (code checks historyRes.data.content in one branch).
+  historyApi.list.mockResolvedValueOnce({ data: { content: [{ novelId: 123, chapterId: 11 }] } });
 
-//   // Ensure libraryApi.add resolves
-//   libraryApi.add.mockResolvedValueOnce({});
+  // Ensure libraryApi.add resolves
+  libraryApi.add.mockResolvedValueOnce({});
 
-//   // Click Add to Library
-//   const addBtn = screen.getByRole('button', { name: /Add to Library/i });
-//   fireEvent.click(addBtn);
+  // Click Add to Library
+  const addBtn = screen.getByRole('button', { name: /Add to Library/i });
+  fireEvent.click(addBtn);
 
-//   await waitFor(() => {
-//     // global tip shows 'Added to library'
-//     expect(screen.getByText(/Added to library/i)).toBeInTheDocument();
-//   });
+  await waitFor(() => {
+    // global tip shows 'Added to library'
+    expect(screen.getByText(/Added to library/i)).toBeInTheDocument();
+  });
 
-//   expect(libraryApi.add).toHaveBeenCalled();
-// });
+  expect(libraryApi.add).toHaveBeenCalled();
+});
 
-// test('Vote flow: clicking vote triggers novelsApi.vote and dispatch updateYuan', async () => {
-//   // use redux-mock-store to capture dispatched actions
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('Vote flow: clicking vote triggers novelsApi.vote and dispatch updateYuan', async () => {
+  // use redux-mock-store to capture dispatched actions
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // Ensure PowerStatusVote mock renders and has vote button
-//   const voteBtn = screen.getByTestId('power-vote-btn');
-//   expect(voteBtn).toBeInTheDocument();
+  // Ensure PowerStatusVote mock renders and has vote button
+  const voteBtn = screen.getByTestId('power-vote-btn');
+  expect(voteBtn).toBeInTheDocument();
 
-//   // novelsApi.vote mock resolves to { remainedYuan: 5 } (set in beforeEach)
-//   fireEvent.click(voteBtn);
+  // novelsApi.vote mock resolves to { remainedYuan: 5 } (set in beforeEach)
+  fireEvent.click(voteBtn);
 
-//   // Wait for async to finish and dispatch to be recorded
-//   await waitFor(() => {
-//     // novelsApi.vote should have been called
-//     expect(novelsApi.vote).toHaveBeenCalledWith('123');
-//   });
+  // Wait for async to finish and dispatch to be recorded
+  await waitFor(() => {
+    // novelsApi.vote should have been called
+    expect(novelsApi.vote).toHaveBeenCalledWith('123');
+  });
 
-//   // redux-mock-store records dispatched actions
-//   const actions = store.getActions();
-//   // The component dispatches: { type: 'user/updateYuan', payload: res.remainedYuan }
-//   expect(actions).toEqual(
-//     expect.arrayContaining([expect.objectContaining({ type: 'user/updateYuan' })])
-//   );
-// });
+  // redux-mock-store records dispatched actions
+  const actions = store.getActions();
+  // The component dispatches: { type: 'user/updateYuan', payload: res.remainedYuan }
+  expect(actions).toEqual(
+    expect.arrayContaining([expect.objectContaining({ type: 'user/updateYuan' })])
+  );
+});
 
-// // =====================
-// // Additional coverage tests
-// // =====================
+// =====================
+// Additional coverage tests
+// =====================
 
-// test('displays loading spinner before data loads', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('displays loading spinner before data loads', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   // make getDetail pending until later
-//   let resolveFn;
-//   novelsApi.getDetail.mockImplementation(
-//     () =>
-//       new Promise((resolve) => {
-//         resolveFn = resolve;
-//       })
-//   );
+  // make getDetail pending until later
+  let resolveFn;
+  novelsApi.getDetail.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveFn = resolve;
+      })
+  );
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   // should show a loading indicator (Spin or similar)
-//   expect(document.querySelector('[aria-busy="true"]')).toBeInTheDocument();
+  // should show a loading indicator (Spin or similar)
+  expect(document.querySelector('[aria-busy="true"]')).toBeInTheDocument();
 
-//   // now resolve API
-//   act(() => {
-//     resolveFn(mockNovelDetail);
-//   });
+  // now resolve API
+  act(() => {
+    resolveFn(mockNovelDetail);
+  });
 
-//   // wait for title to appear (loaded)
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
-// });
+  // wait for title to appear (loaded)
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
+});
 
-// test('displays error alert when API fails', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('displays error alert when API fails', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   novelsApi.getDetail.mockRejectedValueOnce(new Error('Network error'));
+  novelsApi.getDetail.mockRejectedValueOnce(new Error('Network error'));
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() => expect(screen.getByText(/Network error/i)).toBeInTheDocument());
-// });
+  await waitFor(() => expect(screen.getByText(/Network error/i)).toBeInTheDocument());
+});
 
-// test('handles remove from library flow when already added', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('handles remove from library flow when already added', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   // Pretend libraryApi.check returns true (already added)
-//   libraryApi.check.mockResolvedValueOnce(true);
-//   libraryApi.remove.mockResolvedValueOnce({});
+  // Pretend libraryApi.check returns true (already added)
+  libraryApi.check.mockResolvedValueOnce(true);
+  libraryApi.remove.mockResolvedValueOnce({});
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // The button's accessible name is "plus In Library" when already added
-//   const removeBtn = screen.getByRole('button', { name: /plus In Library/i });
-//   fireEvent.click(removeBtn);
+  // The button's accessible name is "plus In Library" when already added
+  const removeBtn = screen.getByRole('button', { name: /plus In Library/i });
+  fireEvent.click(removeBtn);
 
-//   await waitFor(() => expect(screen.getByText(/Removed from library/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText(/Removed from library/i)).toBeInTheDocument());
 
-//   expect(libraryApi.remove).toHaveBeenCalledTimes(1);
-// });
+  expect(libraryApi.remove).toHaveBeenCalledTimes(1);
+});
 
-// test('renders ReviewSection and handles write review click', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('renders ReviewSection and handles write review click', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // ReviewSection should render mock data
-//   const reviewContainer = screen.getByTestId('review-section');
-//   expect(reviewContainer).toHaveTextContent('ReviewsCount:1');
+  // ReviewSection should render mock data
+  const reviewContainer = screen.getByTestId('review-section');
+  expect(reviewContainer).toHaveTextContent('ReviewsCount:1');
 
-//   // Click WRITE button inside ReviewSection mock
-//   const writeBtn = screen.getByTestId('open-review-modal');
-//   fireEvent.click(writeBtn);
+  // Click WRITE button inside ReviewSection mock
+  const writeBtn = screen.getByTestId('open-review-modal');
+  fireEvent.click(writeBtn);
 
-//   // Depending on component behavior, a modal or form should appear
-//   // We'll assert that something review-related appears
-//   // await waitFor(() => {
-//   //   // Look for the review modal/dialog by role or label instead of text matcher
-//   //   // For example, if the modal has role="dialog" and accessible name "Write Review"
-//   //   expect(screen.getByRole('dialog', { name: /write review/i })).toBeInTheDocument();
-//   // });
-// });
+  // Depending on component behavior, a modal or form should appear
+  // We'll assert that something review-related appears
+  // await waitFor(() => {
+  //   // Look for the review modal/dialog by role or label instead of text matcher
+  //   // For example, if the modal has role="dialog" and accessible name "Write Review"
+  //   expect(screen.getByRole('dialog', { name: /write review/i })).toBeInTheDocument();
+  // });
+});
 
-// test('handles empty chapters gracefully', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('handles empty chapters gracefully', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   novelsApi.getChaptersFull.mockResolvedValueOnce({ chapters: [] });
+  novelsApi.getChaptersFull.mockResolvedValueOnce({ chapters: [] });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() =>
-//     expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
-//   );
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { name: 'Test Novel Title', level: 1 })).toBeInTheDocument()
+  );
 
-//   // // no chapters text or placeholder appears
-//   // expect(
-//   //   screen.getByText(/no chapters available/i)
-//   // ).toBeInTheDocument();
-// });
+  // // no chapters text or placeholder appears
+  // expect(
+  //   screen.getByText(/no chapters available/i)
+  // ).toBeInTheDocument();
+});
 
-// test('handles vote failure and shows error tip', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
-//   novelsApi.vote.mockRejectedValueOnce(new Error('Vote failed'));
+test('handles vote failure and shows error tip', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
+  novelsApi.vote.mockRejectedValueOnce(new Error('Vote failed'));
 
-//   renderWithProviders(<NovelDetailPage />, { store });
+  renderWithProviders(<NovelDetailPage />, { store });
 
-//   await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
-//   const voteBtn = screen.getByTestId('power-vote-btn');
-//   fireEvent.click(voteBtn);
+  await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
+  const voteBtn = screen.getByTestId('power-vote-btn');
+  fireEvent.click(voteBtn);
 
-//   await waitFor(() => {
-//     expect(screen.getByText(/Vote failed/i)).toBeInTheDocument();
-//   });
-// });
+  await waitFor(() => {
+    expect(screen.getByText(/Vote failed/i)).toBeInTheDocument();
+  });
+});
 
-// test('shows error tip when add to library fails', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('shows error tip when add to library fails', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   libraryApi.check.mockResolvedValueOnce(false);
-//   libraryApi.add.mockRejectedValueOnce(new Error('Add failed'));
+  libraryApi.check.mockResolvedValueOnce(false);
+  libraryApi.add.mockRejectedValueOnce(new Error('Add failed'));
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
 
-//   const addBtn = screen.getByRole('button', { name: /Add to Library/i });
-//   fireEvent.click(addBtn);
+  const addBtn = screen.getByRole('button', { name: /Add to Library/i });
+  fireEvent.click(addBtn);
 
-//   await waitFor(() => {
-//     expect(screen.getByText(/Add failed/i)).toBeInTheDocument();
-//   });
-// });
+  await waitFor(() => {
+    expect(screen.getByText(/Add failed/i)).toBeInTheDocument();
+  });
+});
 
-// test('shows error tip when remove from library fails', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('shows error tip when remove from library fails', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   libraryApi.check.mockResolvedValueOnce(true);
-//   libraryApi.remove.mockRejectedValueOnce(new Error('Remove failed'));
+  libraryApi.check.mockResolvedValueOnce(true);
+  libraryApi.remove.mockRejectedValueOnce(new Error('Remove failed'));
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
 
-//   const btn = screen.getByRole('button', { name: /In Library/i });
-//   fireEvent.click(btn);
+  const btn = screen.getByRole('button', { name: /In Library/i });
+  fireEvent.click(btn);
 
-//   await waitFor(() => {
-//     expect(screen.getByText(/Remove failed/i)).toBeInTheDocument();
-//   });
-// });
+  await waitFor(() => {
+    expect(screen.getByText(/Remove failed/i)).toBeInTheDocument();
+  });
+});
 
-// test('handles report API failure and shows error tip', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
-//   reportsApi.reportNovel.mockRejectedValueOnce(new Error('You have already reported this novel'));
+test('handles report API failure and shows error tip', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
+  reportsApi.reportNovel.mockRejectedValueOnce(new Error('You have already reported this novel'));
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
 
-//   fireEvent.click(screen.getByRole('button', { name: /Report Story/i }));
-//   await waitFor(() => expect(screen.getAllByText('Report Story').length).toBeGreaterThan(0));
+  fireEvent.click(screen.getByRole('button', { name: /Report Story/i }));
+  await waitFor(() => expect(screen.getAllByText('Report Story').length).toBeGreaterThan(0));
 
-//   const okBtn = screen.getByRole('button', { name: 'REPORT' });
-//   fireEvent.click(okBtn);
+  const okBtn = screen.getByRole('button', { name: 'REPORT' });
+  fireEvent.click(okBtn);
 
-//   await waitFor(() => {
-//     expect(screen.getByText(/You have already reported this novel/i)).toBeInTheDocument();
-//   });
-// });
+  await waitFor(() => {
+    expect(screen.getByText(/You have already reported this novel/i)).toBeInTheDocument();
+  });
+});
 
-// test('does not call vote API when user has zero yuan', async () => {
-//   const store = mockStore({ user: { user: { yuan: 0 } } });
+test('does not call vote API when user has zero yuan', async () => {
+  const store = mockStore({ user: { user: { yuan: 0 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
 
-//   const voteBtn = screen.getByTestId('power-vote-btn');
-//   fireEvent.click(voteBtn);
-//   expect(novelsApi.vote).not.toHaveBeenCalled();
-// });
-// test('handleJumpToChapter updates recentRead and navigates', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
-//   const recordSpy = historyApi.recordRead.mockResolvedValue({});
+  const voteBtn = screen.getByTestId('power-vote-btn');
+  fireEvent.click(voteBtn);
+  expect(novelsApi.vote).not.toHaveBeenCalled();
+});
+test('handleJumpToChapter updates recentRead and navigates', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
+  const recordSpy = historyApi.recordRead.mockResolvedValue({});
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: 'Test Novel Title' }));
 
-//   fireEvent.click(screen.getByRole('button', { name: /Table of Contents/i }));
-//   await waitFor(() => screen.getByText(/All Chapters/i));
+  fireEvent.click(screen.getByRole('button', { name: /Table of Contents/i }));
+  await waitFor(() => screen.getByText(/All Chapters/i));
 
-//   const chapterBtn = screen.getByText(/Chapter 1/i);
-//   fireEvent.click(chapterBtn);
+  const chapterBtn = screen.getByText(/Chapter 1/i);
+  fireEvent.click(chapterBtn);
 
-//   await waitFor(() => {
-//     expect(recordSpy).toHaveBeenCalledWith('123', 11);
-//   });
-// });
+  await waitFor(() => {
+    expect(recordSpy).toHaveBeenCalledWith('123', 11);
+  });
+});
 
 // test('renders correct breadcrumb for rankings referrer', async () => {
 //   const store = mockStore({ user: { user: { yuan: 10 } } });
@@ -666,22 +666,22 @@
 //   expect(screen.getByText(/Fantasy/i)).toBeInTheDocument();
 // });
 
-// test('handles like/unlike review flow', async () => {
-//   const store = mockStore({ user: { user: { yuan: 10 } } });
+test('handles like/unlike review flow', async () => {
+  const store = mockStore({ user: { user: { yuan: 10 } } });
 
-//   renderWithProviders(<NovelDetailPage />, { store });
-//   await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
+  renderWithProviders(<NovelDetailPage />, { store });
+  await waitFor(() => screen.getByRole('heading', { name: /Test Novel Title/i }));
 
-//   const review = screen.getByTestId('paged-reviews');
-//   expect(review).toHaveTextContent('"id":1');
+  const review = screen.getByTestId('paged-reviews');
+  expect(review).toHaveTextContent('"id":1');
 
-//   await act(async () => {
-//     await screen.findByTestId('open-review-modal'); // wait a bit
-//   });
+  await act(async () => {
+    await screen.findByTestId('open-review-modal'); // wait a bit
+  });
 
-//   await act(async () => {
-//     await reviewsApi.unlike(1);
-//   });
+  await act(async () => {
+    await reviewsApi.unlike(1);
+  });
 
-//   expect(reviewsApi.unlike).toHaveBeenCalled();
-// });
+  expect(reviewsApi.unlike).toHaveBeenCalled();
+});
