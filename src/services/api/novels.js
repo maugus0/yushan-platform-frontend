@@ -86,7 +86,6 @@ export const getWeeklyFeaturedNovels = async () => {
       content: transformNovelData(novels.slice(0, 8)),
     };
   } catch (error) {
-    console.warn('Weekly featured novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -110,7 +109,6 @@ export const getOngoingNovels = async () => {
       content: transformNovelData(ongoingNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.warn('Ongoing novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -134,7 +132,6 @@ export const getCompletedNovels = async () => {
       content: transformNovelData(completedNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.warn('Completed novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };
@@ -152,7 +149,6 @@ export const getNewestNovels = async () => {
       content: transformNovelData(response.data?.content || []),
     };
   } catch (error) {
-    console.warn('Newest novels unavailable:', error?.message || error);
     return { content: [] };
   }
 };

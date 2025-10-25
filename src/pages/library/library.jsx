@@ -50,7 +50,6 @@ const Library = () => {
         const content = novelsRes.data.content || [];
         setNovels((prev) => (novelsPage === 0 ? content : [...prev, ...content]));
         setNovelsHasMore(content.length === PAGE_SIZE);
-        console.log('Fetched library novels:', content);
       } catch (error) {
         setErrorMsg(error.message || 'Failed to load library.');
         setErrorModal(true);

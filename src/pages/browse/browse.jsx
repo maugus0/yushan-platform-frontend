@@ -261,7 +261,6 @@ const BrowsePage = () => {
         }
         setTotalNovels(response.totalElements || 0);
       } catch (error) {
-        console.warn('Failed to fetch novels:', error?.message || error);
         setSoftError('Failed to load novels. Please try again.');
       } finally {
         setLoading(false);
