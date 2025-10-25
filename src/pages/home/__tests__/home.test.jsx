@@ -106,33 +106,33 @@ describe('Homepage', () => {
     jest.spyOn(novelsApi, 'getCompletedNovels').mockResolvedValue({ content: completedSample });
   });
 
-  // test('loads data on mount and renders hero / features / sections', async () => {
-  //   const { container } = render(<Homepage />);
+  test('loads data on mount and renders hero / features / sections', async () => {
+    const { container } = render(<Homepage />);
 
-  //   // Title on CTA and Hero wrapper should exist immediately
-  //   expect(
-  //     screen.getAllByText(/Get Started|Newest Books|Ready to Begin Your Journey?/i).length
-  //   ).toBeGreaterThan(0);
+    // Title on CTA and Hero wrapper should exist immediately
+    expect(
+      screen.getAllByText(/Get Started|Newest Books|Ready to Begin Your Journey?/i).length
+    ).toBeGreaterThan(0);
 
-  //   // Wait for API calls from useEffect to resolve and state updates
-  //   await waitFor(() => {
-  //     expect(novelsApi.getNewestNovels).toHaveBeenCalled();
-  //     expect(novelsApi.getWeeklyFeaturedNovels).toHaveBeenCalled();
-  //     expect(novelsApi.getOngoingNovels).toHaveBeenCalled();
-  //     expect(novelsApi.getCompletedNovels).toHaveBeenCalled();
-  //   });
+    // Wait for API calls from useEffect to resolve and state updates
+    await waitFor(() => {
+      expect(novelsApi.getNewestNovels).toHaveBeenCalled();
+      expect(novelsApi.getWeeklyFeaturedNovels).toHaveBeenCalled();
+      expect(novelsApi.getOngoingNovels).toHaveBeenCalled();
+      expect(novelsApi.getCompletedNovels).toHaveBeenCalled();
+    });
 
-  //   // Our mocked child components should render
-  //   expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
-  //   expect(screen.getByTestId('mock-feature-Weekly Featured')).toBeInTheDocument();
-  //   expect(screen.getByTestId('mock-feature-Ongoing Novels')).toBeInTheDocument();
-  //   expect(screen.getByTestId('mock-feature-Completed Novels')).toBeInTheDocument();
-  //   expect(screen.getByTestId('mock-categories')).toBeInTheDocument();
-  //   expect(screen.getByTestId('mock-topnovels')).toBeInTheDocument();
+    // Our mocked child components should render
+    expect(screen.getByTestId('mock-hero')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-feature-Weekly Featured')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-feature-Ongoing Novels')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-feature-Completed Novels')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-categories')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-topnovels')).toBeInTheDocument();
 
-  //   // CTA card exists
-  //   expect(container.querySelector('.home-cta-card')).toBeTruthy();
-  // });
+    // CTA card exists
+    expect(container.querySelector('.home-cta-card')).toBeTruthy();
+  });
 
   test('CTA buttons navigate to expected routes', async () => {
     render(<Homepage />);
