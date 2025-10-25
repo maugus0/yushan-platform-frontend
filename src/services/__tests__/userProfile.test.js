@@ -1,5 +1,5 @@
-import userProfileService from '../userProfile';
 import axios from 'axios';
+import userProfileService from '../userProfile';
 
 jest.mock('axios');
 
@@ -86,12 +86,8 @@ describe('userProfileService', () => {
       expect(result.data.email).toBe('new@example.com');
     });
   });
-});
 
-describe('userProfileService - additional coverage', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  // ===== additional coverage =====
 
   // ===== getCurrentUser =====
   test('getCurrentUser - success with valid data', async () => {
@@ -233,8 +229,19 @@ describe('userProfileService - additional coverage', () => {
 
   // ===== getUserById =====
   test('getUserById - success', async () => {
-    axios.get.mockResolvedValue({ data: { data: { id: 'u2', name: 'user2' } } });
+    // service returns { user, achievements } and user should include uuid
+    const apiUser = {
+      uuid: 'u2',
+      email: 'u2@example.com',
+      username: 'user2',
+    };
+    axios.get.mockResolvedValueOnce({ data: { data: apiUser } });
+    // for level and achievements endpoints, return defaults to avoid errors
+    axios.get.mockResolvedValueOnce({ data: { data: null } });
+    axios.get.mockResolvedValueOnce({ data: { data: [] } });
+
     const res = await userProfileService.getUserById('u2');
-    expect(res.id).toBe('u2');
+    expect(res).toHaveProperty('user');
+    expect(res.user.uuid).toBe('u2');
   });
 });

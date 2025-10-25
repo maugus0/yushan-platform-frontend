@@ -36,7 +36,7 @@ describe('novelsApi service', () => {
     const result = await novelsApi.vote(1);
 
     expect(http.post).toHaveBeenCalledWith(
-      '/novels/1/vote',
+      '/votes/novels/1',
       {},
       { headers: { Authorization: 'Bearer token' } }
     );
@@ -65,21 +65,24 @@ describe('novelsApi service', () => {
     expect(result).toEqual(mockChapters);
   });
 
-  // test('getChaptersFull calls http.get and returns all chapters', async () => {
-  //   const mockChapters = [
-  //     { id: 1, title: 'Chapter 1' },
-  //     { id: 2, title: 'Chapter 2' },
-  //   ];
-  //   http.get.mockResolvedValue({ data: { data: mockChapters } });
+  test('getChaptersFull calls http.get and returns all chapters', async () => {
+    const mockChapters = [
+      { id: 1, title: 'Chapter 1' },
+      { id: 2, title: 'Chapter 2' },
+    ];
+    // service returns a paginated object with chapters and totalElements
+    http.get.mockResolvedValue({
+      data: { data: { chapters: mockChapters, totalElements: mockChapters.length } },
+    });
 
-  //   const result = await novelsApi.getChaptersFull(1);
+    const result = await novelsApi.getChaptersFull(1);
 
-  //   expect(http.get).toHaveBeenCalledWith(
-  //     '/chapters/novel/1?page=1&pageSize=1000&publishedOnly=true',
-  //     { headers: { Authorization: 'Bearer token' } }
-  //   );
-  //   expect(result).toEqual(mockChapters);
-  // });
+    expect(http.get).toHaveBeenCalledWith('/chapters/novel/1', {
+      headers: { Authorization: 'Bearer token' },
+      params: { page: 0, size: 100 },
+    });
+    expect(result).toEqual({ chapters: mockChapters, totalElements: mockChapters.length });
+  });
 
   test('getChapterContent calls http.get and returns chapter content', async () => {
     const mockContent = { id: 1, content: 'Chapter text' };

@@ -6,8 +6,10 @@ const novelsApi = {
     return res?.data?.data;
   },
   async vote(novelId) {
-    const res = await http.post(`/novels/${novelId}/vote`, {}, { headers: authHeader() });
-    return res?.data?.data; // { novelId, voteCount, remainedYuan }
+    // new endpoint: POST /votes/novels/{novelId}
+    //const res = await http.post(`/votes/novels/${novelId}`, {}, { headers: authHeader() });
+    const res = await http.post(`/votes/novels/${novelId}`, {}, { headers: authHeader() });
+    return res?.data?.data; // { novelId, voteCount, isVoted, remainedYuan }
   },
   // utility for cover url
   coverUrl(v) {

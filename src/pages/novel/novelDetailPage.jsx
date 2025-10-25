@@ -325,6 +325,10 @@ export default function NovelDetailPage() {
     setVoting(true);
     try {
       const res = await novelsApi.vote(novelId);
+      // update page vote counts from response
+      if (res) {
+        setNovel((prev) => (prev ? { ...prev, votes: Number(res.voteCount ?? prev.votes) } : prev));
+      }
       showTip('Voted successfully', 'success');
       if (res?.remainedYuan !== undefined) {
         dispatch({
