@@ -166,12 +166,12 @@ describe('Homepage', () => {
     expect(mockNavigate).toHaveBeenCalledWith(`/novel/${weeklySample[0].id}`);
   });
 
-  // test('snapshot of rendered homepage (structure)', async () => {
-  //   const { container } = render(<Homepage />);
-  //   // wait for useEffect
-  //   await waitFor(() => expect(novelsApi.getNewestNovels).toHaveBeenCalled());
-  //   expect(container).toMatchSnapshot();
-  // });
+  test('snapshot of rendered homepage (structure)', async () => {
+    const { container } = render(<Homepage />);
+    // wait for useEffect
+    await waitFor(() => expect(novelsApi.getNewestNovels).toHaveBeenCalled());
+    expect(container).toMatchSnapshot();
+  });
 });
 
 // Additional tests to raise coverage >80%
