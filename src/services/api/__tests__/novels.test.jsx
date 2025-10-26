@@ -33,13 +33,6 @@ jest.mock('../../../utils/imageUtils', () => ({
 // Mock the fallback image asset
 jest.mock('../../../assets/images/novel_default.png', () => 'fallbackImage');
 
-// --- Test Setup ---
-
-// Helper function to create a generic JavaScript error
-const createGenericError = (message) => {
-  return new Error(message);
-};
-
 // --- Define Reusable Mock Data ---
 
 // 1. Mock raw API data
@@ -120,9 +113,6 @@ const mockLargeApiResponse = {
     },
   },
 };
-
-// 4. Mock a generic error
-const mockError = createGenericError('API Request Failed');
 
 // --- Test Suite ---
 

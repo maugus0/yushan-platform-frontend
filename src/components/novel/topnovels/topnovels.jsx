@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Typography, Spin, Tag, Alert } from 'antd';
 import { EyeOutlined, HeartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { http } from '../../../services/_http';
 import { handleImageError } from '../../../utils/imageUtils';
 import fallbackImage from '../../../assets/images/novel_default.png';
 import './topnovels.css';
@@ -22,18 +22,14 @@ const TopNovels = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(
-          //'https://yushan-backend-staging.up.railway.app/api/ranking/novel',
-          '/api/v1/ranking/novel',
-          {
-            params: {
-              page: 0,
-              size: 15,
-              sortType: 'view',
-              timeRange: 'overall',
-            },
-          }
-        );
+        const response = await http.get('/ranking/novel', {
+          params: {
+            page: 0,
+            size: 15,
+            sortType: 'view',
+            timeRange: 'overall',
+          },
+        });
 
         if (response.data && response.data.data && response.data.data.content) {
           const novels = response.data.data.content;
