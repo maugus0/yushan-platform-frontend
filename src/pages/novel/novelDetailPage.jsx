@@ -107,7 +107,10 @@ export default function NovelDetailPage() {
         const url = `${apiBase.replace(/\/$/, '')}/ranking/novel/${novelId}/rank`;
         const res = await axios.get(url);
         setVoteRanking(res?.data?.data?.rank ?? null);
-        setVoteRankType(res?.data?.data?.rankType ?? 'Vote Ranking');
+        // backend changed the field name to `rankingType` (keep backward compat with `rankType`)
+        setVoteRankType(
+          res?.data?.data?.rankingType ?? res?.data?.data?.rankType ?? 'Vote Ranking'
+        );
         setVoteRankingMessage(res?.data?.message ?? '');
       } catch (e) {
         setVoteRanking(null);
@@ -154,6 +157,14 @@ export default function NovelDetailPage() {
 
         const abs = processImageUrl(data?.coverImgUrl, IMAGE_BASE_URL, testImg);
         setCoverUrl(abs);
+        // Record a view for this novel (backend: POST /novels/{id}/view)
+        // Fire-and-forget; update local counter optimistically
+        try {
+          novelsApi.addView(novelId).catch(() => {});
+          setNovel((prev) => (prev ? { ...prev, views: Number(prev.views || 0) + 1 } : prev));
+        } catch (err) {
+          // ignore view recording errors
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err?.response?.data?.message || err?.message || 'Failed to load novel details');
@@ -311,7 +322,8 @@ export default function NovelDetailPage() {
           const firstChapter = chaptersRes?.chapters?.[0];
           if (firstChapter && firstChapter.chapterId) chapterId = firstChapter.chapterId;
         }
-        if (!chapterId) chapterId = 1;
+        // If we still can't determine a chapter progress, send null per backend contract
+        if (!chapterId) chapterId = null;
         await libraryApi.add(novelId, chapterId);
         setInLibrary(true);
         showTip('Added to library', 'success');

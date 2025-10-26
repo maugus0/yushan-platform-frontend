@@ -46,6 +46,11 @@ const novelsApi = {
     const res = await http.get(`/chapters/${uuid}`, { headers: authHeader() });
     return res?.data?.data;
   },
+  // Record a view for a novel (fire-and-forget). Backend returns simple payload.
+  async addView(novelId) {
+    const res = await http.post(`/novels/${novelId}/view`, {}, { headers: authHeader() });
+    return res?.data;
+  },
 };
 
 export default novelsApi;

@@ -50,7 +50,7 @@ test('renders footer sections, social links and contact info', () => {
   // social links with aria-label and href
   const github = screen.getByLabelText('GitHub');
   expect(github).toBeInTheDocument();
-  expect(github.getAttribute('href')).toContain('github.com/maugus0/yushan-frontend');
+  expect(github.getAttribute('href')).toContain('github.com/maugus0/yushan-platform-frontend');
 
   const twitter = screen.getByLabelText('Twitter');
   expect(twitter).toBeInTheDocument();

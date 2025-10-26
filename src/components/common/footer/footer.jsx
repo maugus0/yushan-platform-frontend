@@ -21,7 +21,7 @@ const Footer = () => {
   const socialLinks = [
     {
       icon: <GithubOutlined />,
-      href: 'https://github.com/maugus0/yushan-frontend/',
+      href: 'https://github.com/maugus0/yushan-platform-frontend/',
       label: 'GitHub',
     },
     {
