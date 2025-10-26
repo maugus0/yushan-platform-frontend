@@ -1,13 +1,14 @@
 import { httpClient } from '../httpClient';
 import { processImageUrl } from '../../utils/imageUtils';
+import { API_BASE } from '../_http';
 
 // Import fallback image
 import fallbackImage from '../../assets/images/novel_default.png';
 
 //const BASE_URL = 'https://yushan-backend-staging.up.railway.app/api';
 //const IMAGE_BASE_URL = 'https://yushan-backend-staging.up.railway.app/images';
-const BASE_URL = '/api/v1';
-const IMAGE_BASE_URL = '/api/v1/images';
+const BASE_URL = API_BASE;
+const IMAGE_BASE_URL = `${API_BASE}/images`;
 
 // Extract gradient constant for reusability
 export const GRADIENT_COLORS = 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #7C3AED 100%)';

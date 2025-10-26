@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, Row, Col, Typography, Spin, Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { http } from '../../../services/_http';
 import './categoriesgrid.css';
 
 const { Title } = Typography;
@@ -17,10 +17,8 @@ const CategoriesGrid = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(
-          //'https://yushan-backend-staging.up.railway.app/api/categories'
-          '/api/v1/categories'
-        );
+        // Use unified http client with API_BASE
+        const response = await http.get('/categories');
 
         if (response.data && response.data.data && response.data.data.categories) {
           setCategories(response.data.data.categories);

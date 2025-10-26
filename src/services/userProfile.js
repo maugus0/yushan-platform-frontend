@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL =
   //process.env.REACT_APP_API_URL || 'https://yushan-backend-staging.up.railway.app/api';
-  process.env.REACT_APP_API_URL || '/api/v1';
+  process.env.REACT_APP_API_URL || 'https://yushan.duckdns.org/api/v1';
 
 // Map string gender from API to numeric values
 const GENDER_MAP = {
