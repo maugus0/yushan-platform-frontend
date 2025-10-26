@@ -176,7 +176,13 @@ const Library = () => {
                 onClick={
                   editMode
                     ? () => handleSelect(novel.novelId)
-                    : () => navigate(`/read/${novel.novelId}/${novel.chapterNumber}`)
+                    : () => {
+                        if (novel.chapterCnt === 0) {
+                          navigate(`/novel/${novel.novelId}`);
+                        } else {
+                          navigate(`/read/${novel.novelId}/${novel.chapterNumber ?? 1}`);
+                        }
+                      }
                 }
               >
                 <div className="library-novel-img-wrapper">
@@ -203,7 +209,7 @@ const Library = () => {
                 <div className="library-novel-title">{novel.novelTitle}</div>
                 <div className="library-novel-progress">
                   <Text type="secondary">
-                    Progress {novel.chapterNumber}/{novel.chapterCnt}
+                    Progress {novel.chapterNumber ?? 0}/{novel.chapterCnt}
                   </Text>
                 </div>
               </div>
@@ -238,7 +244,7 @@ const Library = () => {
                 ref={isLastElement ? lastElementRef : null}
                 className="history-chapter-row hoverable-history-row"
                 key={item.historyId || item.id}
-                onClick={() => navigate(`/read/${item.novelId}/${item.chapterNumber}`)}
+                onClick={() => navigate(`/read/${item.novelId}/${item.chapterNumber ?? 1}`)}
               >
                 <div className="history-chapter-content">
                   <img
@@ -259,9 +265,7 @@ const Library = () => {
                     </div>
                   </div>
                   <div className="history-progress">
-                    <span>
-                      Progress: {item.chapterNumber}/{item.chapterCnt}
-                    </span>
+                    <span>Progress: Chapter{item.chapterNumber}</span>
                   </div>
                 </div>
                 <span className="history-arrow">

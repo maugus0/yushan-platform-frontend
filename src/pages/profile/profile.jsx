@@ -9,7 +9,7 @@ import { MaleIcon, FemaleIcon } from '../../components/user/icons/gendericon';
 import { WriterIcon } from '../../components/user/icons/userrolesicon';
 import userProfileService from '../../services/userProfile';
 import gamificationApi from '../../services/gamification';
-import achievementIcon from '../../assets/images/logo192.png';
+import achievementIcon from '../../assets/images/badge.png';
 import { updateUser } from '../../store/slices/user';
 import { processUserAvatar, getGenderBasedAvatar } from '../../utils/imageUtils';
 import { IMAGE_BASE_URL } from '../../config/images';
