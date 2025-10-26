@@ -180,11 +180,11 @@ export default function LeaderboardPage() {
           hasMoreRef.current = more;
           setHasMore(more);
         } else if (activeTab === TAB_KEYS.READERS) {
+          // readers endpoint does not need sortBy; backend uses timeRange + paging
           res = await rankingsApi.getReaders({
             page,
             size: pageSize,
             timeRange,
-            sortBy: 'levelxp',
           });
           const batch = Array.isArray(res?.items) ? res.items : [];
           if (reqId !== reqSeqRef.current) return;
@@ -324,7 +324,7 @@ export default function LeaderboardPage() {
       const base = filtersRef.current;
       let next = { ...base, ...patch };
 
-      if (activeTab === TAB_KEYS.READERS) next.sortBy = 'levelxp';
+      // do not set sortBy for READERS — backend ranking/user doesn't accept sortBy
 
       if (activeTab === TAB_KEYS.NOVELS) {
         const validSorts = ['views', 'votes'];
@@ -366,7 +366,8 @@ export default function LeaderboardPage() {
         pageSize: f.pageSize,
         genre: f.genre,
         timeRange: f.timeRange,
-        sortBy: activeTab === TAB_KEYS.READERS ? 'levelxp' : f.sortBy || defaultSortFor(activeTab),
+        // omit sortBy for READERS (backend ignores/doesn't need it)
+        sortBy: activeTab === TAB_KEYS.READERS ? undefined : f.sortBy || defaultSortFor(activeTab),
       },
       true
     );
@@ -385,7 +386,7 @@ export default function LeaderboardPage() {
         pageSize: f.pageSize,
         genre: f.genre,
         timeRange: f.timeRange,
-        sortBy: activeTab === TAB_KEYS.READERS ? 'levelxp' : f.sortBy || defaultSortFor(activeTab),
+        sortBy: activeTab === TAB_KEYS.READERS ? undefined : f.sortBy || defaultSortFor(activeTab),
       },
       true
     ).finally(() => {
@@ -400,7 +401,7 @@ export default function LeaderboardPage() {
     const nextPage = pageRef.current + 1;
     pageRef.current = nextPage;
     const f = filtersRef.current;
-    const sort = activeTab === TAB_KEYS.READERS ? 'levelxp' : f.sortBy || defaultSortFor(activeTab);
+    const sort = activeTab === TAB_KEYS.READERS ? undefined : f.sortBy || defaultSortFor(activeTab);
     fetchPage({
       page: nextPage,
       pageSize: f.pageSize,

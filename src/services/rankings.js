@@ -44,7 +44,12 @@ export default {
       params,
       headers: authHeader(),
     });
-    return normalizePage(res);
+    const pageObj = normalizePage(res);
+    // map `currentExp` -> `xp` for UI compatibility (some components look for exp/xp)
+    const items = Array.isArray(pageObj.items)
+      ? pageObj.items.map((it) => ({ ...it, xp: it.currentExp ?? it.exp ?? it.xp }))
+      : [];
+    return { ...pageObj, items };
   },
 
   // GET /api/ranking/author (writers)
