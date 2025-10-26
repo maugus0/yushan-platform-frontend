@@ -4,7 +4,7 @@ const BASE = CONFIG_URL ? CONFIG_URL.replace(/\/+$/, '') : '/api';
 import { http, authHeader } from './_http';
 
 const libraryApi = {
-  async add(novelId, progress = 1) {
+  async add(novelId, progress = null) {
     try {
       const res = await http.post(`/library/${novelId}`, { progress }, { headers: authHeader() });
       return res?.data?.data;
