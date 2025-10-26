@@ -1,22 +1,23 @@
 {
   "files": {
     "main.css": "/yushan-platform-frontend/static/css/main.cd766551.css",
-    "main.js": "/yushan-platform-frontend/static/js/main.15b875df.js",
+    "main.js": "/yushan-platform-frontend/static/js/main.8c1143bd.js",
     "static/media/icon1.png": "/yushan-platform-frontend/static/media/icon1.de48fdb3b795cce0a896.png",
     "static/media/logo.png": "/yushan-platform-frontend/static/media/logo.3dac8368101d1f145224.png",
     "static/media/userprofilecover.png": "/yushan-platform-frontend/static/media/userprofilecover.3a0f75795081371fde1e.png",
     "static/media/icon3.jpg": "/yushan-platform-frontend/static/media/icon3.6cda3eda60492dd0cca3.jpg",
     "static/media/icon2.jpg": "/yushan-platform-frontend/static/media/icon2.9b96e7370c61b1d0acdb.jpg",
     "static/media/user.png": "/yushan-platform-frontend/static/media/user.e6436ee0e3508e207bc4.png",
+    "static/media/badge.png": "/yushan-platform-frontend/static/media/badge.be0466e5c2cf3c0359d4.png",
     "static/media/user_female.png": "/yushan-platform-frontend/static/media/user_female.912e042a7a7ca4b68a84.png",
     "static/media/novel_default.png": "/yushan-platform-frontend/static/media/novel_default.f15ad647d7bcb27e575c.png",
     "static/media/user_male.png": "/yushan-platform-frontend/static/media/user_male.59b848e45364f11c9906.png",
     "index.html": "/yushan-platform-frontend/index.html",
     "main.cd766551.css.map": "/yushan-platform-frontend/static/css/main.cd766551.css.map",
-    "main.15b875df.js.map": "/yushan-platform-frontend/static/js/main.15b875df.js.map"
+    "main.8c1143bd.js.map": "/yushan-platform-frontend/static/js/main.8c1143bd.js.map"
   },
   "entrypoints": [
     "static/css/main.cd766551.css",
-    "static/js/main.15b875df.js"
+    "static/js/main.8c1143bd.js"
   ]
 }
