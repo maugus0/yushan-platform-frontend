@@ -22,12 +22,11 @@ const TopNovels = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await http.get('/ranking/novel', {
+        const response = await http.get('/novels', {
           params: {
             page: 0,
             size: 15,
-            sortType: 'view',
-            timeRange: 'overall',
+            status: 'PUBLISHED',
           },
         });
 
