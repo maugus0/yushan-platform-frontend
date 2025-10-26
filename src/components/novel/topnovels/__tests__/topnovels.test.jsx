@@ -35,13 +35,13 @@ test('shows loading spinner initially while fetching', async () => {
   const { container } = render(<TopNovels />);
   // spinner visible on initial render
   expect(container.querySelector('.ant-spin')).toBeTruthy();
-  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/ranking/novel', expect.any(Object)));
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 });
 
 test('displays error alert when fetch fails', async () => {
   http.get.mockRejectedValueOnce(new Error('Network'));
   render(<TopNovels />);
-  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/ranking/novel', expect.any(Object)));
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
   // shows error alert with text
   expect(screen.getByText(/Error/i)).toBeInTheDocument();
   expect(screen.getByText(/Failed to load top novels/i)).toBeInTheDocument();
@@ -50,7 +50,7 @@ test('displays error alert when fetch fails', async () => {
 test('shows info alert when no novels returned', async () => {
   http.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
   render(<TopNovels />);
-  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/ranking/novel', expect.any(Object)));
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
   expect(screen.getByText(/No novels found/i)).toBeInTheDocument();
 });
 
@@ -70,7 +70,7 @@ test('renders novels list and navigates on card click and author click stops pro
   http.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
 
   render(<TopNovels />);
-  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/ranking/novel', expect.any(Object)));
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 
   // Title visible
   expect(screen.getByText('Top Novels')).toBeInTheDocument();
@@ -111,7 +111,7 @@ test('image onError calls handleImageError', async () => {
   http.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
 
   render(<TopNovels />);
-  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/ranking/novel', expect.any(Object)));
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 
   const img = screen.getByAltText('Broken Cover');
   // simulate error event

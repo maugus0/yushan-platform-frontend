@@ -23,6 +23,7 @@ import searchService from '../../../services/search';
 import { processImageUrl, processUserAvatar } from '../../../utils/imageUtils';
 import novelDefaultImg from '../../../assets/images/novel_default.png';
 import userDefaultImg from '../../../assets/images/user.png';
+import siteLogo from '../../../assets/images/logo.png';
 
 const { Header } = Layout;
 
@@ -447,7 +448,7 @@ const Navbar = ({ isAuthenticated, user }) => {
     <Header className="modern-navbar">
       <div className="navbar-container">
         <div className="navbar-logo" onClick={() => navigate('/')}>
-          <div className="logo-icon">Y</div>
+          <img src={siteLogo} alt="Yushan" className="logo-icon" />
           <span className="logo-text">Yushan</span>
         </div>
 
@@ -582,7 +583,7 @@ const Navbar = ({ isAuthenticated, user }) => {
         <Drawer
           title={
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div className="logo-icon mobile">Y</div>
+              <img src={siteLogo} alt="Yushan" className="logo-icon mobile" />
               <span>Yushan</span>
             </div>
           }
