@@ -25,7 +25,7 @@ const TopNovels = () => {
         const response = await http.get('/novels', {
           params: {
             page: 0,
-            size: 15,
+            size: 5,
             status: 'PUBLISHED',
           },
         });

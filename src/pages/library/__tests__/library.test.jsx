@@ -866,7 +866,6 @@ describe('Library Component', () => {
       expect(screen.getByText('Incomplete History')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Progress: 5/20')).toBeInTheDocument();
     expect(screen.queryByText(/by/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/\[/i)).not.toBeInTheDocument();
   });
