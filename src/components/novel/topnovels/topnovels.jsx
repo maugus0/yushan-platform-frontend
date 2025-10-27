@@ -108,7 +108,9 @@ const TopNovels = () => {
                     style={{ cursor: 'pointer', color: '#1890ff' }}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent novel card click
-                      navigate(`/profile/${novel.authorId || novel.userId}`);
+                      // Use query param `userId` to match the app's /profile route handling
+                      const userId = novel?.author?.uuid || novel.authorId || novel.userId;
+                      navigate(`/profile?userId=${encodeURIComponent(userId)}`);
                     }}
                   >
                     by {novel.authorUsername || novel.author || 'Unknown Author'}
