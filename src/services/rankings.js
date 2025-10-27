@@ -1,5 +1,6 @@
 // Real backend API for rankings. Uses CRA dev proxy: package.json "proxy": "http://localhost:8080/api"
 import axios from 'axios';
+import { getMockNovels, getMockReaders, getMockWriters } from './mockRankings';
 
 // Prefer explicit API base if provided; otherwise use same-origin /api (dev proxy/nginx)
 const CONFIG_URL = (process.env.REACT_APP_API_URL || '').trim();
@@ -12,9 +13,23 @@ function authHeader() {
 }
 
 // Normalize backend paging payload to the shape expected by the page
-function normalizePage(resp) {
+function normalizePage(resp, mockDataGetter) {
   const d = resp?.data?.data ?? {};
-  const content = Array.isArray(d.content) ? d.content : [];
+  let content = Array.isArray(d.content) ? d.content : [];
+
+  // If content is empty and we have mock data, use it (but not in test environment)
+  if (content.length === 0 && mockDataGetter && process.env.NODE_ENV !== 'test') {
+    const mockData = mockDataGetter();
+    content = mockData.content;
+    return {
+      items: content,
+      total: mockData.totalElements,
+      page: (mockData.currentPage ?? 0) + 1,
+      size: mockData.size,
+      raw: mockData,
+    };
+  }
+
   return {
     items: content,
     total: d.totalElements ?? content.length ?? 0,
@@ -32,7 +47,7 @@ export default {
     if (timeRange) params.timeRange = timeRange; // weekly | monthly | overall
     if (sortType) params.sortType = sortType; // view | vote
     const res = await axios.get(`${BASE}/ranking/novel`, { params, headers: authHeader() });
-    return normalizePage(res);
+    return normalizePage(res, getMockNovels);
   },
 
   // GET /api/ranking/user (readers)
@@ -44,7 +59,7 @@ export default {
       params,
       headers: authHeader(),
     });
-    return normalizePage(res);
+    return normalizePage(res, getMockReaders);
   },
 
   // GET /api/ranking/author (writers)
@@ -56,6 +71,6 @@ export default {
       params,
       headers: authHeader(),
     });
-    return normalizePage(res);
+    return normalizePage(res, getMockWriters);
   },
 };
