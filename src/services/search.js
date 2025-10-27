@@ -1,13 +1,13 @@
 import { http, authHeader } from './_http';
 
 const searchService = {
-  async searchUsers(keyword, page = 1, pageSize = 10) {
+  async searchChapters(q, page = 1, size = 10) {
     try {
-      const res = await http.get('/search/users', {
+      const res = await http.get('/search/chapters', {
         params: {
-          keyword,
+          q,
           page,
-          pageSize,
+          size,
           sortBy: 'created_at',
           sortOrder: 'DESC',
         },
@@ -18,22 +18,22 @@ const searchService = {
       const data = res?.data?.data || res?.data || {};
 
       return {
-        users: data.users || [],
-        userCount: data.userCount || 0,
+        chapters: data.chapters || [],
+        chapterCount: data.chapterCount || 0,
       };
     } catch (error) {
-      console.error('Search users error:', error);
-      return { users: [], userCount: 0 };
+      console.error('Search chapters error:', error);
+      return { chapters: [], chapterCount: 0 };
     }
   },
 
-  async searchNovels(keyword, page = 1, pageSize = 10) {
+  async searchNovels(q, page = 1, size = 10) {
     try {
       const res = await http.get('/search/novels', {
         params: {
-          keyword,
+          q,
           page,
-          pageSize,
+          size,
           sortBy: 'created_at',
           sortOrder: 'DESC',
         },
@@ -53,28 +53,46 @@ const searchService = {
     }
   },
 
-  async searchAll(keyword, page = 1, pageSize = 10) {
+  async searchAll(q, page = 1, size = 10) {
     try {
-      const [usersResult, novelsResult] = await Promise.all([
-        this.searchUsers(keyword, page, pageSize),
-        this.searchNovels(keyword, page, pageSize),
+      const [chaptersResult, novelsResult] = await Promise.all([
+        this.searchChapters(q, page, size),
+        this.searchNovels(q, page, size),
       ]);
 
       return {
-        users: usersResult.users || [],
-        userCount: usersResult.userCount || 0,
+        chapters: chaptersResult.chapters || [],
+        chapterCount: chaptersResult.chapterCount || 0,
         novels: novelsResult.novels || [],
         novelCount: novelsResult.novelCount || 0,
       };
     } catch (error) {
       console.error('Search all error:', error);
       return {
-        users: [],
-        userCount: 0,
+        chapters: [],
+        chapterCount: 0,
         novels: [],
         novelCount: 0,
       };
     }
+  },
+
+  async searchCombined(q, page = 0, size = 10) {
+    const res = await http.get('/search', {
+      params: {
+        q,
+        page,
+        size,
+        sortBy: 'created_at',
+        sortOrder: 'DESC',
+      },
+      headers: authHeader(),
+    });
+
+    // Handle both nested (res.data.data) and flat (res.data) response formats
+    const data = res?.data?.data || res?.data || {};
+
+    return data;
   },
 };
 
