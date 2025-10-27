@@ -6,6 +6,9 @@ import './writerworkspace.css';
 import { useNavigate } from 'react-router-dom';
 import novelService from '../../services/novel';
 import userService from '../../services/user';
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
+import fallbackImage from '../../assets/images/novel_default.png';
 
 const PAGE_SIZE = 10;
 
@@ -151,6 +154,8 @@ const WriterWorkspace = () => {
     }
   };
 
+  const getCoverSrc = (url) => processImageUrl(url, IMAGE_BASE_URL, fallbackImage);
+
   const menu = (id) => {
     const story = stories.find((s) => s.id === id);
     if (story && story.status === 'PUBLISHED') {
@@ -211,10 +216,6 @@ const WriterWorkspace = () => {
     );
   };
 
-  const isValidBase64Url = (url) => {
-    return /^data:image\/(jpeg|png|jpg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(url);
-  };
-
   return (
     <div className="writerworkspace-page">
       <WriterNavbar />
@@ -255,13 +256,14 @@ const WriterWorkspace = () => {
                     >
                       <div className="board-column story-info">
                         <img
-                          src={
-                            story.coverImgUrl && isValidBase64Url(story.coverImgUrl)
-                              ? story.coverImgUrl
-                              : require('../../assets/images/novel_default.png')
-                          }
+                          src={getCoverSrc(story.coverImgUrl)}
                           alt={story.title}
                           className="story-cover"
+                          onError={(e) => {
+                            if (e.currentTarget.src !== fallbackImage) {
+                              e.currentTarget.src = fallbackImage;
+                            }
+                          }}
                         />
                         <div className="story-details">
                           <span className="story-title">{story.title}</span>

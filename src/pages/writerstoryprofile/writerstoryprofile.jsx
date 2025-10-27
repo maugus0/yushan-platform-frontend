@@ -7,6 +7,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import novelService from '../../services/novel';
 import chapterService from '../../services/chapter';
 import dayjs from 'dayjs';
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
+import fallbackImage from '../../assets/images/novel_default.png';
 
 const PAGE_SIZE = 10;
 
@@ -44,7 +47,7 @@ const WriterStoryProfile = () => {
         ]);
 
         setStory(fetchedStory);
-        const newList = chaptersRes.data.chapters || [];
+        const newList = chaptersRes.content || [];
         setChaptersData(newList);
         setChaptersHasMore(newList.length === PAGE_SIZE);
       } catch (error) {
@@ -121,9 +124,7 @@ const WriterStoryProfile = () => {
     setDeleteModal({ visible: false, idx: null });
   };
 
-  const isValidBase64Url = (url) => {
-    return /^data:image\/(jpeg|png|jpg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(url);
-  };
+  const getCoverSrc = (url) => processImageUrl(url, IMAGE_BASE_URL, fallbackImage);
 
   return (
     <div className="writerstoryprofile-page">
@@ -155,13 +156,14 @@ const WriterStoryProfile = () => {
             <div className="storyprofile-content-box">
               <div className="storyprofile-main-row">
                 <img
-                  src={
-                    story.coverImgUrl && isValidBase64Url(story.coverImgUrl)
-                      ? story.coverImgUrl
-                      : require('../../assets/images/novel_default.png')
-                  }
+                  src={getCoverSrc(story.coverImgUrl)}
                   alt="cover"
                   className="storyprofile-cover"
+                  onError={(e) => {
+                    if (e.currentTarget.src !== fallbackImage) {
+                      e.currentTarget.src = fallbackImage;
+                    }
+                  }}
                 />
                 <div className="storyprofile-info">
                   <div className="storyprofile-title">{story.title}</div>

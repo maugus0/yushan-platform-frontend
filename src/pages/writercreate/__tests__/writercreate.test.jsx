@@ -219,7 +219,7 @@ jest.mock('antd', () => {
   // Modal
   const MockModal = ({
     children,
-    open,
+    open: isOpen,
     title,
     onCancel,
     onOk,
@@ -228,7 +228,7 @@ jest.mock('antd', () => {
     footer,
     ...props
   }) => {
-    if (!open) return null;
+    if (!isOpen) return null;
     return (
       <div data-testid="mock-modal" {...props}>
         {title && <h2>{title}</h2>}
@@ -465,7 +465,7 @@ describe('WriterCreate Component', () => {
     });
 
     expect(novelService.createNovel).not.toHaveBeenCalled();
-    expect(novelService.submitNovelForReview).toHaveBeenCalledWith(mockNovel.id);
+    expect(novelService.submitNovelForReview).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(screen.getByText('Success!')).toBeInTheDocument();
@@ -497,27 +497,6 @@ describe('WriterCreate Component', () => {
   test('shows error modal if changeNovelDetailById API fails in edit mode', async () => {
     const apiError = new Error('Failed to update novel');
     novelService.changeNovelDetailById.mockRejectedValue(apiError);
-
-    renderComponent(mockNovel.id);
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
-    });
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'UPLOAD FOR REVIEW' }));
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
-    });
-    expect(screen.queryByText('Success!')).not.toBeInTheDocument();
-  });
-
-  // Test 13: shows error modal if submitNovelForReview API fails
-  test('shows error modal if submitNovelForReview API fails', async () => {
-    const apiError = new Error('Failed to submit for review');
-    novelService.submitNovelForReview.mockRejectedValue(apiError);
 
     renderComponent(mockNovel.id);
 

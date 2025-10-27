@@ -1,5 +1,4 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import axios from 'axios';
 
 const mockNavigate = jest.fn();
 
@@ -39,8 +38,13 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-// mock axios
-jest.mock('axios');
+// mock unified http client used by CategoriesGrid
+jest.mock('../../../../services/_http', () => ({
+  http: {
+    get: jest.fn(),
+  },
+}));
+import { http } from '../../../../services/_http';
 
 import CategoriesGrid from '../categoriesgrid';
 
@@ -49,27 +53,27 @@ afterEach(() => {
 });
 
 test('shows loading spinner initially while fetching', async () => {
-  axios.get.mockResolvedValueOnce({ data: { data: { categories: [] } } });
+  http.get.mockResolvedValueOnce({ data: { data: { categories: [] } } });
   const { container } = render(<CategoriesGrid />);
   // initial render should show a spinner container
   expect(container.querySelector('.ant-spin')).toBeTruthy();
   // wait for fetch to complete
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/categories'));
 });
 
 test('displays error alert when fetch fails', async () => {
-  axios.get.mockRejectedValueOnce(new Error('Network'));
+  http.get.mockRejectedValueOnce(new Error('Network'));
   render(<CategoriesGrid />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/categories'));
   // AntD Alert shows "Error" header text
   expect(screen.getByText(/Error/i)).toBeInTheDocument();
   expect(screen.getByText(/Failed to load categories/i)).toBeInTheDocument();
 });
 
 test('shows info alert when no categories returned', async () => {
-  axios.get.mockResolvedValueOnce({ data: { data: { categories: [] } } });
+  http.get.mockResolvedValueOnce({ data: { data: { categories: [] } } });
   render(<CategoriesGrid />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/categories'));
   expect(screen.getByText(/No categories found/i)).toBeInTheDocument();
 });
 
@@ -78,10 +82,10 @@ test('renders category cards and navigates on click', async () => {
     { id: 11, name: 'Fantasy', description: 'Magic books' },
     { id: 22, name: 'Horror', description: 'Scary books' },
   ];
-  axios.get.mockResolvedValueOnce({ data: { data: { categories } } });
+  http.get.mockResolvedValueOnce({ data: { data: { categories } } });
 
   render(<CategoriesGrid />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/categories'));
 
   // both category names and descriptions should be visible
   expect(screen.getByText('Fantasy')).toBeInTheDocument();

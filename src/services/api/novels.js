@@ -1,11 +1,14 @@
 import { httpClient } from '../httpClient';
 import { processImageUrl } from '../../utils/imageUtils';
+import { API_BASE } from '../_http';
 
 // Import fallback image
 import fallbackImage from '../../assets/images/novel_default.png';
 
-const BASE_URL = 'https://yushan-backend-staging.up.railway.app/api';
-const IMAGE_BASE_URL = 'https://yushan-backend-staging.up.railway.app/images';
+//const BASE_URL = 'https://yushan-backend-staging.up.railway.app/api';
+//const IMAGE_BASE_URL = 'https://yushan-backend-staging.up.railway.app/images';
+const BASE_URL = API_BASE;
+const IMAGE_BASE_URL = `${API_BASE}/images`;
 
 // Extract gradient constant for reusability
 export const GRADIENT_COLORS = 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #7C3AED 100%)';
@@ -31,7 +34,7 @@ export const getNovels = async (params = {}) => {
     const response = await httpClient.get(`${BASE_URL}/novels?${searchParams.toString()}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching novels:', error);
+    console.warn('Error fetching novels:', error?.message || error);
     throw error;
   }
 };
@@ -84,8 +87,6 @@ export const getWeeklyFeaturedNovels = async () => {
       content: transformNovelData(novels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching weekly featured novels:', error);
-    // Return empty content with proper structure instead of throwing
     return { content: [] };
   }
 };
@@ -109,7 +110,6 @@ export const getOngoingNovels = async () => {
       content: transformNovelData(ongoingNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching ongoing novels:', error);
     return { content: [] };
   }
 };
@@ -133,7 +133,6 @@ export const getCompletedNovels = async () => {
       content: transformNovelData(completedNovels.slice(0, 8)),
     };
   } catch (error) {
-    console.error('Error fetching completed novels:', error);
     return { content: [] };
   }
 };
@@ -151,7 +150,6 @@ export const getNewestNovels = async () => {
       content: transformNovelData(response.data?.content || []),
     };
   } catch (error) {
-    console.error('Error fetching newest novels:', error);
     return { content: [] };
   }
 };

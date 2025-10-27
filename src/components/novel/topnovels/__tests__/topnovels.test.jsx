@@ -1,8 +1,12 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 
-// mock axios before importing the component
-jest.mock('axios');
-import axios from 'axios';
+// mock unified http client used by TopNovels
+jest.mock('../../../../services/_http', () => ({
+  http: {
+    get: jest.fn(),
+  },
+}));
+import { http } from '../../../../services/_http';
 
 // mock image handler used by component
 jest.mock('../../../../utils/imageUtils', () => ({
@@ -27,26 +31,26 @@ afterEach(() => {
 });
 
 test('shows loading spinner initially while fetching', async () => {
-  axios.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
+  http.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
   const { container } = render(<TopNovels />);
   // spinner visible on initial render
   expect(container.querySelector('.ant-spin')).toBeTruthy();
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 });
 
 test('displays error alert when fetch fails', async () => {
-  axios.get.mockRejectedValueOnce(new Error('Network'));
+  http.get.mockRejectedValueOnce(new Error('Network'));
   render(<TopNovels />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
   // shows error alert with text
   expect(screen.getByText(/Error/i)).toBeInTheDocument();
   expect(screen.getByText(/Failed to load top novels/i)).toBeInTheDocument();
 });
 
 test('shows info alert when no novels returned', async () => {
-  axios.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
+  http.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
   render(<TopNovels />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
   expect(screen.getByText(/No novels found/i)).toBeInTheDocument();
 });
 
@@ -63,10 +67,10 @@ test('renders novels list and navigates on card click and author click stops pro
       category: 'Fantasy',
     },
   ];
-  axios.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
+  http.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
 
   render(<TopNovels />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 
   // Title visible
   expect(screen.getByText('Top Novels')).toBeInTheDocument();
@@ -89,7 +93,7 @@ test('renders novels list and navigates on card click and author click stops pro
   mockNavigate.mockClear();
   const authorLink = screen.getByText(/by Alice/i);
   fireEvent.click(authorLink);
-  expect(mockNavigate).toHaveBeenCalledWith('/profile/a1');
+  expect(mockNavigate).toHaveBeenCalledWith('/profile?userId=a1');
   // Only one navigation should be triggered for author click
   expect(mockNavigate).toHaveBeenCalledTimes(1);
 });
@@ -104,10 +108,10 @@ test('image onError calls handleImageError', async () => {
       authorUsername: 'Bob',
     },
   ];
-  axios.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
+  http.get.mockResolvedValueOnce({ data: { data: { content: novels } } });
 
   render(<TopNovels />);
-  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+  await waitFor(() => expect(http.get).toHaveBeenCalledWith('/novels', expect.any(Object)));
 
   const img = screen.getByAltText('Broken Cover');
   // simulate error event

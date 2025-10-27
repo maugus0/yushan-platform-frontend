@@ -4,6 +4,7 @@ import { useReadingSettings } from '../../store/readingSettings';
 import { saveProgress, getProgress } from '../../utils/reader';
 import './reader.css';
 import novelsApi from '../../services/novels';
+import chapterService from '../../services/chapter';
 import commentsApi from '../../services/comments';
 import historyApi from '../../services/history';
 import { Button, Input, Pagination, Tooltip, Popconfirm, Modal, Checkbox } from 'antd';
@@ -67,6 +68,14 @@ export default function ReaderPage() {
             await historyApi.recordRead(novelId, res.id);
           } catch (e) {
             // ignore error
+          }
+        }
+        // Record chapter view (POST /chapters/{uuid}/view) - fire-and-forget
+        if (res?.uuid) {
+          try {
+            chapterService.addViewByUuid(res.uuid).catch(() => {});
+          } catch (e) {
+            // ignore errors
           }
         }
         const stored = getProgress(novelId);

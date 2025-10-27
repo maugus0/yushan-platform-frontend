@@ -1,6 +1,10 @@
 .writerworkspace-page {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   --sidebar-width: 220px;
 }
 
@@ -12,7 +16,8 @@
   align-items: center;
   margin-left: var(--sidebar-width);
   transition: margin-left 0.2s;
-  overflow-y: auto;
+  min-height: 0;
+  width: 100%;
 }
 
 .writerworkspace-header {

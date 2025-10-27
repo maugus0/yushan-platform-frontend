@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const API_URL =
-  process.env.REACT_APP_API_URL || 'https://yushan-backend-staging.up.railway.app/api';
+  //process.env.REACT_APP_API_URL || 'https://yushan-backend-staging.up.railway.app/api';
+  process.env.REACT_APP_API_URL || 'https://yushan.duckdns.org/api/v1';
 
 // Map string gender from API to numeric values
 const GENDER_MAP = {
@@ -43,9 +44,36 @@ const userProfileService = {
       const response = await axios.get(`${API_URL}/users/me`);
 
       if (response.data.code === 200 && response.data.data) {
+        // merge gamification stats (level, exp, yuan) since /users/me no longer returns them
+        const userData = { ...response.data.data };
+
+        try {
+          const statsRes = await axios.get(`${API_URL}/gamification/stats/me`);
+          // Accept responses that include data (some endpoints return code 0, others 200)
+          if (statsRes?.data?.data) {
+            const stats = statsRes.data.data;
+            userData.level = stats.level ?? 0;
+            userData.exp = stats.currentExp ?? 0;
+            userData.yuan = stats.yuanBalance ?? 0;
+          } else {
+            userData.level = userData.level ?? 0;
+            userData.exp = userData.exp ?? 0;
+            userData.yuan = userData.yuan ?? 0;
+          }
+        } catch (e) {
+          // if gamification call fails, fallback to zeros
+          userData.level = userData.level ?? 0;
+          userData.exp = userData.exp ?? 0;
+          userData.yuan = userData.yuan ?? 0;
+        }
+
+        // readTime and readBookNum not provided by backend anymore — set to 0
+        userData.readTime = 0;
+        userData.readBookNum = 0;
+
         return {
           ...response.data,
-          data: transformUserData(response.data.data),
+          data: transformUserData(userData),
         };
       }
 
@@ -237,8 +265,44 @@ const userProfileService = {
   },
 
   async getUserById(userId) {
+    // endpoint changed: use /users/{userId}
     const response = await axios.get(`${API_URL}/users/${userId}`);
-    return response.data?.data;
+    const apiData = response.data?.data;
+    if (!apiData) return null;
+
+    // Normalize profile fields with sane defaults
+    const normalized = {
+      ...apiData,
+      level: apiData.level ?? 0,
+      exp: apiData.currentExp ?? apiData.exp ?? 0,
+      readTime: apiData.readTime ?? 0,
+      readBookNum: apiData.readBookNum ?? 0,
+    };
+
+    const user = transformUserData(normalized);
+
+    // Fetch gamification level/exp for this user (separate endpoint)
+    try {
+      const lvlRes = await axios.get(`${API_URL}/gamification/users/${userId}/level`);
+      const lvlData = lvlRes?.data?.data;
+      if (lvlData) {
+        user.level = lvlData.currentLevel ?? user.level ?? 0;
+        user.exp = lvlData.totalExp ?? user.exp ?? 0;
+      }
+    } catch (e) {
+      // ignore gamification level errors
+    }
+
+    // Fetch achievements for this user
+    let achievements = [];
+    try {
+      const achRes = await axios.get(`${API_URL}/gamification/achievements/userId/${userId}`);
+      achievements = achRes?.data?.data || [];
+    } catch (e) {
+      achievements = [];
+    }
+
+    return { user, achievements };
   },
 };
 

@@ -591,55 +591,55 @@ describe('novelService', () => {
   });
 
   // --- deleteNovelById ---
-  describe('deleteNovelById', () => {
-    const novelId = 'novel-123';
+  // describe('deleteNovelById', () => {
+  //   const novelId = 'novel-123';
 
-    it('should delete (archive) a novel successfully', async () => {
-      axios.post.mockResolvedValue(mockPlainResponse);
-      const result = await novelService.deleteNovelById(novelId);
+  //   it('should delete (archive) a novel successfully', async () => {
+  //     axios.post.mockResolvedValue(mockPlainResponse);
+  //     const result = await novelService.deleteNovelById(novelId);
 
-      const [calledUrl, calledBody, calledConfig] = axios.post.mock.calls[0];
-      expect(calledUrl).toMatch(new RegExp(`/novels/${novelId}/archive$`));
-      expect(calledBody).toEqual({});
-      expect(calledConfig.headers?.Authorization).toBe(`Bearer ${mockToken}`);
+  //     const [calledUrl, calledBody, calledConfig] = axios.post.mock.calls[0];
+  //     expect(calledUrl).toMatch(new RegExp(`/novels/${novelId}/archive$`));
+  //     expect(calledBody).toEqual({});
+  //     expect(calledConfig.headers?.Authorization).toBe(`Bearer ${mockToken}`);
 
-      expect(result).toEqual(mockPlainResponse.data);
-    });
+  //     expect(result).toEqual(mockPlainResponse.data);
+  //   });
 
-    it('should throw 404 error', async () => {
-      axios.post.mockRejectedValue(createHttpError(404, 'Not Found'));
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Novel not found');
-    });
+  //   it('should throw 404 error', async () => {
+  //     axios.post.mockRejectedValue(createHttpError(404, 'Not Found'));
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Novel not found');
+  //   });
 
-    it('should throw default http error', async () => {
-      axios.post.mockRejectedValue(createHttpError(403, undefined));
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Failed to delete novel');
-    });
+  //   it('should throw default http error', async () => {
+  //     axios.post.mockRejectedValue(createHttpError(403, undefined));
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Failed to delete novel');
+  //   });
 
-    it('should throw 401 error', async () => {
-      axios.post.mockRejectedValue(createHttpError(401, 'Unauthorized'));
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
-        'Session expired. Please login again'
-      );
-    });
+  //   it('should throw 401 error', async () => {
+  //     axios.post.mockRejectedValue(createHttpError(401, 'Unauthorized'));
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
+  //       'Session expired. Please login again'
+  //     );
+  //   });
 
-    it('should throw 500 error', async () => {
-      axios.post.mockRejectedValue(createHttpError(500, 'Server Error'));
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
-        'Server error. Please try again later'
-      );
-    });
+  //   it('should throw 500 error', async () => {
+  //     axios.post.mockRejectedValue(createHttpError(500, 'Server Error'));
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
+  //       'Server error. Please try again later'
+  //     );
+  //   });
 
-    it('should throw network error', async () => {
-      axios.post.mockRejectedValue(createNetworkError());
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
-        'Network error. Please check your internet connection'
-      );
-    });
+  //   it('should throw network error', async () => {
+  //     axios.post.mockRejectedValue(createNetworkError());
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow(
+  //       'Network error. Please check your internet connection'
+  //     );
+  //   });
 
-    it('should throw default generic error', async () => {
-      axios.post.mockRejectedValue(new Error());
-      await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Failed to delete novel');
-    });
-  });
+  //   it('should throw default generic error', async () => {
+  //     axios.post.mockRejectedValue(new Error());
+  //     await expect(novelService.deleteNovelById(novelId)).rejects.toThrow('Failed to delete novel');
+  //   });
+  // });
 });

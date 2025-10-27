@@ -77,13 +77,13 @@ describe('libraryApi', () => {
   describe('add', () => {
     const novelId = 'novel-123';
 
-    it('should add a novel with default progress (1)', async () => {
+    it('should add a novel with default progress (null)', async () => {
       const result = await libraryApi.add(novelId);
 
       // Check that http.post was called with the correct URL, body, and headers
       expect(http.post).toHaveBeenCalledWith(
         `/library/${novelId}`,
-        { progress: 1 }, // Default progress
+        { progress: null }, // Default progress
         { headers: mockAuthHeader }
       );
       expect(authHeader).toHaveBeenCalledTimes(1);

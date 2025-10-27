@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layout, Button, Avatar, Typography, Divider, Tooltip, Spin, message } from 'antd';
+import { Layout, Button, Avatar, Typography, Divider, Tooltip, Spin } from 'antd';
 import { EditOutlined, CalendarOutlined, StarFilled } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,8 +8,11 @@ import * as LevelIcons from '../../components/user/icons/levelicon';
 import { MaleIcon, FemaleIcon } from '../../components/user/icons/gendericon';
 import { WriterIcon } from '../../components/user/icons/userrolesicon';
 import userProfileService from '../../services/userProfile';
+import gamificationApi from '../../services/gamification';
+import achievementIcon from '../../assets/images/badge.png';
 import { updateUser } from '../../store/slices/user';
 import { processUserAvatar, getGenderBasedAvatar } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -27,6 +30,7 @@ const Profile = () => {
   const [user, setUser] = useState(currentUser);
   const [loading, setLoading] = useState(false);
   const [avatarSrc, setAvatarSrc] = useState('');
+  const [achievements, setAchievements] = useState([]);
 
   // Fetch profile data
   useEffect(() => {
@@ -34,21 +38,27 @@ const Profile = () => {
       setLoading(true);
       try {
         if (userId && userId !== currentUser?.uuid) {
-          // Fetch target user profile
-          const data = await userProfileService.getUserById(userId);
-          setUser(data);
+          const result = await userProfileService.getUserById(userId);
+          // result = { user, achievements }
+          setUser(result?.user || null);
+          setAchievements(result?.achievements || []);
         } else {
-          // Fetch current user profile and update Redux
           const response = await userProfileService.getCurrentUser();
           if (response.code === 200 && response.data) {
             setUser(response.data);
             dispatch(updateUser(response.data));
-            console.log('Updated current user in Redux:', response.data);
+          }
+
+          // load achievements for current user
+          try {
+            const ach = await gamificationApi.getMyAchievements();
+            setAchievements(ach || []);
+          } catch (e) {
+            setAchievements([]);
           }
         }
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        message.error('Failed to load profile data');
+        setUser(currentUser);
       } finally {
         setLoading(false);
       }
@@ -60,11 +70,7 @@ const Profile = () => {
   // Update avatar source when user data changes
   useEffect(() => {
     if (user) {
-      const processedAvatar = processUserAvatar(
-        user.avatarUrl,
-        user.gender,
-        process.env.REACT_APP_API_URL?.replace('/api', '/images')
-      );
+      const processedAvatar = processUserAvatar(user.avatarUrl, user.gender, IMAGE_BASE_URL);
       setAvatarSrc(processedAvatar);
     }
   }, [user]);
@@ -204,6 +210,39 @@ const Profile = () => {
                   EXP: {user.exp || 0}
                 </span>
               </div>
+
+              {/* Achievements: header above the items */}
+              {achievements && achievements.length > 0 && (
+                <>
+                  <div className="achievements-header">
+                    <div
+                      className="achievements-header-emoji"
+                      role="img"
+                      aria-label="achievements-emoji"
+                    >
+                      🏅
+                    </div>
+                    <div className="achievements-header-title">Achievements</div>
+                  </div>
+
+                  <div className="profile-achievements" aria-label="achievements">
+                    {achievements.map((a) => {
+                      const unlocked = a.unlockedAt
+                        ? new Date(a.unlockedAt).toLocaleDateString('en-US')
+                        : '';
+                      const tip = `${a.description || ''}${unlocked ? ` — ${unlocked}` : ''}`;
+                      return (
+                        <Tooltip key={a.id} title={tip}>
+                          <div className="achievement-item">
+                            <img src={achievementIcon} alt={a.name} className="achievement-icon" />
+                            <div className="achievement-name">{a.name}</div>
+                          </div>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
             <div className="profile-info-right">
               {user.gender === 1 || user.gender === 2 ? (

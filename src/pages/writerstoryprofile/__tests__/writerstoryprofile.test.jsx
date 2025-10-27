@@ -40,13 +40,11 @@ jest.mock('react-router-dom', () => ({
 var mockAntdMessage = { success: jest.fn(), error: jest.fn() };
 
 jest.mock('antd', () => {
-  // ... (Your Antd Mock implementation remains here)
   const React = jest.requireActual('react');
   const antd = jest.requireActual('antd');
-  // ... (MockModal and MockSpin definitions)
 
-  const MockModal = ({ children, open, onCancel, onOk, footer, title, ...props }) => {
-    if (!open) return null;
+  const MockModal = ({ children, open: isOpen, onCancel, onOk, footer, title, ...props }) => {
+    if (!isOpen) return null;
     const renderFooter = () => {
       if (footer && Array.isArray(footer)) {
         return footer.map((button, i) => <React.Fragment key={i}>{button}</React.Fragment>);
@@ -197,7 +195,7 @@ const renderComponent = (storyId = 'story-123') => {
 const setupSuccessMocks = (chapters = mockChaptersPage0.slice(0, 2), story = mockStory) => {
   NovelService.getNovelById.mockResolvedValue(story);
   ChapterService.getChapterByNovelId.mockResolvedValue({
-    data: { chapters: chapters },
+    content: chapters,
   });
 };
 
@@ -329,7 +327,7 @@ describe('WriterStoryProfile Component', () => {
     const storyWithOneChapter = { ...mockStory, chapterCnt: 1 };
     NovelService.getNovelById.mockResolvedValue(storyWithOneChapter);
     ChapterService.getChapterByNovelId.mockResolvedValue({
-      data: { chapters: mockChaptersPage0.slice(0, 1) },
+      content: mockChaptersPage0.slice(0, 1),
     });
     ChapterService.deleteChapterByChapterId.mockResolvedValue({});
     renderComponent();
@@ -365,7 +363,7 @@ describe('WriterStoryProfile Component', () => {
   test('handles error on loading more chapters', async () => {
     // First call returns 10 chapters
     ChapterService.getChapterByNovelId.mockResolvedValueOnce({
-      data: { chapters: mockChaptersPage0 },
+      content: mockChaptersPage0,
     });
     // Second call fails
     const errorMsg = 'Failed to load more chapters.';
@@ -392,7 +390,7 @@ describe('WriterStoryProfile Component', () => {
   test('renders "No chapters" when chaptersData is empty after load', async () => {
     NovelService.getNovelById.mockResolvedValue(mockStory);
     ChapterService.getChapterByNovelId.mockResolvedValue({
-      data: { chapters: [] },
+      content: [],
     });
     renderComponent();
 
@@ -420,17 +418,16 @@ describe('WriterStoryProfile Component', () => {
   });
 
   // test15
-  test('handles invalid image URL (falls back to default)', async () => {
-    const invalidUrl = 'http://not-base64.com/img.png';
-    setupSuccessMocks(mockChaptersPage0.slice(0, 1), { ...mockStory, coverImgUrl: invalidUrl });
+  test('handles non-base64 image URL (uses URL as src)', async () => {
+    const httpUrl = 'http://not-base64.com/img.png';
+    setupSuccessMocks(mockChaptersPage0.slice(0, 1), { ...mockStory, coverImgUrl: httpUrl });
 
     renderComponent();
 
     await waitFor(() => {
       const coverImg = screen.getByAltText('cover');
-      expect(coverImg.src).not.toContain(invalidUrl);
-      // Jest mocks require() calls, so we expect the test-file-stub
-      expect(coverImg.src).toContain('test-file-stub');
+      expect(coverImg).toBeInTheDocument();
+      expect(coverImg.getAttribute('src')).toBe(httpUrl);
     });
   });
 
@@ -452,7 +449,7 @@ describe('WriterStoryProfile Component', () => {
   test('loadingMore state stops intersection observer logic', async () => {
     // First call returns 10 chapters
     ChapterService.getChapterByNovelId.mockResolvedValueOnce({
-      data: { chapters: mockChaptersPage0 },
+      content: mockChaptersPage0,
     });
     // Second call hangs (never resolves)
     ChapterService.getChapterByNovelId.mockReturnValue(new Promise(() => {}));

@@ -66,7 +66,7 @@ const chapterService = {
         params: { page, pageSize },
         headers: authHeader(),
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       if (error.response) {
         const status = error.response.status;
@@ -160,6 +160,36 @@ const chapterService = {
         throw new Error('Network error. Please check your internet connection');
       } else {
         throw new Error(error.message || 'Failed to fetch chapter');
+      }
+    }
+  },
+  // Record a view for a chapter (by uuid)
+  async addViewByUuid(uuid) {
+    try {
+      const response = await axios.post(
+        `${BASE}/chapters/${uuid}/view`,
+        {},
+        { headers: authHeader() }
+      );
+      return response.data;
+    } catch (error) {
+      // bubble up structured errors similar to others
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.message || error.response.data?.error;
+        if (status === 401) {
+          throw new Error('Session expired. Please login again');
+        } else if (status === 404) {
+          throw new Error('Chapter not found');
+        } else if (status === 500) {
+          throw new Error('Server error. Please try again later');
+        } else {
+          throw new Error(message || 'Failed to record chapter view');
+        }
+      } else if (error.request) {
+        throw new Error('Network error. Please check your internet connection');
+      } else {
+        throw new Error(error.message || 'Failed to record chapter view');
       }
     }
   },

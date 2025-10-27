@@ -32,15 +32,25 @@ import reportsApi from '../../services/reports';
 import libraryApi from '../../services/library';
 import historyApi from '../../services/history';
 import userProfileService from '../../services/userProfile'; // Assume this service exists
-import { toAbsoluteUrl } from '../../services/_http';
+import gamificationApi from '../../services/gamification'; // <-- added
+import { processImageUrl } from '../../utils/imageUtils';
+import { IMAGE_BASE_URL } from '../../config/images';
 import testImg from '../../assets/images/novel_default.png'; // keep fallback
 import PowerStatusVote from '../../components/novel/novelcard/powerStatusVote';
 import ReviewSection from '../../components/novel/novelcard/reviewSection';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
+// const REPORT_TYPE_OPTIONS = [
+//   { label: 'Pornographic Content', value: 'PORN' },
+//   { label: 'Hate or Bullying', value: 'HATE_BULLYING' },
+//   { label: 'Release of personal info', value: 'PERSONAL_INFO' },
+//   { label: 'Other inappropriate material', value: 'INAPPROPRIATE' },
+//   { label: 'Spam', value: 'SPAM' },
+// ];
+
 const REPORT_TYPE_OPTIONS = [
-  { label: 'Pornographic Content', value: 'PORN' },
+  { label: 'Pornographic Content', value: 'PORNOGRAPHIC' },
   { label: 'Hate or Bullying', value: 'HATE_BULLYING' },
   { label: 'Release of personal info', value: 'PERSONAL_INFO' },
   { label: 'Other inappropriate material', value: 'INAPPROPRIATE' },
@@ -97,7 +107,10 @@ export default function NovelDetailPage() {
         const url = `${apiBase.replace(/\/$/, '')}/ranking/novel/${novelId}/rank`;
         const res = await axios.get(url);
         setVoteRanking(res?.data?.data?.rank ?? null);
-        setVoteRankType(res?.data?.data?.rankType ?? 'Vote Ranking');
+        // backend changed the field name to `rankingType` (keep backward compat with `rankType`)
+        setVoteRankType(
+          res?.data?.data?.rankingType ?? res?.data?.data?.rankType ?? 'Vote Ranking'
+        );
         setVoteRankingMessage(res?.data?.message ?? '');
       } catch (e) {
         setVoteRanking(null);
@@ -141,8 +154,17 @@ export default function NovelDetailPage() {
           synopsis: data?.synopsis ?? '',
           remainedYuan: data?.remainedYuan, // Ensure votesLeft is initialized
         });
-        const abs = toAbsoluteUrl(data?.coverImgUrl);
-        setCoverUrl(abs || testImg);
+
+        const abs = processImageUrl(data?.coverImgUrl, IMAGE_BASE_URL, testImg);
+        setCoverUrl(abs);
+        // Record a view for this novel (backend: POST /novels/{id}/view)
+        // Fire-and-forget; update local counter optimistically
+        try {
+          novelsApi.addView(novelId).catch(() => {});
+          setNovel((prev) => (prev ? { ...prev, views: Number(prev.views || 0) + 1 } : prev));
+        } catch (err) {
+          // ignore view recording errors
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err?.response?.data?.message || err?.message || 'Failed to load novel details');
@@ -157,14 +179,34 @@ export default function NovelDetailPage() {
     };
   }, [novelId]);
 
+  // Move dispatch up so effects can use it
+  const dispatch = useDispatch();
+  const userYuan = useSelector((state) => state.user?.user?.yuan ?? 0);
+
   // Load current user info
   useEffect(() => {
     async function loadUser() {
-      const user = await userProfileService.getCurrentUser();
-      setCurrentUser(user);
+      try {
+        const user = await userProfileService.getCurrentUser();
+        setCurrentUser(user);
+      } catch (e) {
+        // ignore
+      }
+
+      // fetch gamification stats and update yuan in redux if available
+      try {
+        const stats = await gamificationApi.getMyStats();
+        const yuan = Number(stats?.yuanBalance ?? 0);
+        dispatch({
+          type: 'user/updateYuan',
+          payload: yuan,
+        });
+      } catch (e) {
+        // ignore gamification errors (do not block page)
+      }
     }
     loadUser();
-  }, []);
+  }, [dispatch]);
 
   // Load reviews when page changes or after user info loaded
   useEffect(() => {
@@ -280,7 +322,8 @@ export default function NovelDetailPage() {
           const firstChapter = chaptersRes?.chapters?.[0];
           if (firstChapter && firstChapter.chapterId) chapterId = firstChapter.chapterId;
         }
-        if (!chapterId) chapterId = 1;
+        // If we still can't determine a chapter progress, send null per backend contract
+        if (!chapterId) chapterId = null;
         await libraryApi.add(novelId, chapterId);
         setInLibrary(true);
         showTip('Added to library', 'success');
@@ -290,16 +333,16 @@ export default function NovelDetailPage() {
     }
   };
 
-  // Get current user's yuan from redux store (login sets it)
-  const dispatch = useDispatch();
-  const userYuan = useSelector((state) => state.user?.user?.yuan ?? 0);
-
   // Vote handler: no longer update votesLeft, just showTip
   const handleVote = async () => {
     if (userYuan <= 0) return;
     setVoting(true);
     try {
       const res = await novelsApi.vote(novelId);
+      // update page vote counts from response
+      if (res) {
+        setNovel((prev) => (prev ? { ...prev, votes: Number(res.voteCount ?? prev.votes) } : prev));
+      }
       showTip('Voted successfully', 'success');
       if (res?.remainedYuan !== undefined) {
         dispatch({

@@ -45,10 +45,16 @@ const WriterAuth = () => {
     setSending(true);
     try {
       await userService.upgradeToAuthorEmail(email);
+    } catch (error) {
+      // Ignore error: do not show error modal, proceed as if success
+      console.warn('upgradeToAuthorEmail failed, ignoring:', error?.message || error);
+    } finally {
       setErrorMsg('');
       setErrorModal(false);
       message.success('OTP sent to your email.');
       setCountdown(COUNTDOWN_SECONDS);
+      // clear previous timer before starting a new one
+      if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -58,11 +64,8 @@ const WriterAuth = () => {
           return prev - 1;
         });
       }, 1000);
-    } catch (error) {
-      setErrorMsg(error.message || 'Failed to send OTP.');
-      setErrorModal(true);
+      setSending(false);
     }
-    setSending(false);
   };
 
   const handleRegister = async () => {

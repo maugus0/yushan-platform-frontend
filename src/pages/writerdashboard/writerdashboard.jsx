@@ -4,6 +4,9 @@ import { Select, Card, Typography, Tag, Row, Col, Divider, Modal, Button, Spin }
 import './writerdashboard.css';
 import novelService from '../../services/novel';
 import userService from '../../services/user';
+import { processImageUrl } from '../../utils/imageUtils';
+import fallbackImage from '../../assets/images/novel_default.png';
+import { IMAGE_BASE_URL } from '../../config/images';
 
 const { Title, Text } = Typography;
 
@@ -43,9 +46,7 @@ const WriterDashboard = () => {
     }
   }, [novels, selectedNovelId]);
 
-  const isValidBase64Url = (url) => {
-    return /^data:image\/(jpeg|png|jpg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(url);
-  };
+  const getCoverSrc = (url) => processImageUrl(url, IMAGE_BASE_URL, fallbackImage);
 
   return (
     <div className="writerdashboard-page">
@@ -76,26 +77,33 @@ const WriterDashboard = () => {
               <Card className="writerdashboard-novel-card" bodyStyle={{ padding: 0 }}>
                 <Row gutter={[32, 24]}>
                   <Col xs={24} md={8} lg={6} className="writerdashboard-cover-col">
-                    <img
-                      src={
-                        selectedNovel.coverImgUrl && isValidBase64Url(selectedNovel.coverImgUrl)
-                          ? selectedNovel.coverImgUrl
-                          : require('../../assets/images/novel_default.png')
-                      }
-                      alt={selectedNovel.title}
-                      className="writerdashboard-novel-cover"
-                      style={
-                        selectedNovel.coverImgUrl && isValidBase64Url(selectedNovel.coverImgUrl)
-                          ? undefined
-                          : {
-                              objectFit: 'cover',
-                              objectPosition: 'center',
-                              borderRadius: 12,
-                              transform: 'scale(1.08) translateY(-6px)',
-                              background: '#f5f5f5',
+                    {(() => {
+                      const coverSrc = getCoverSrc(selectedNovel.coverImgUrl);
+                      const isFallback = coverSrc === fallbackImage;
+                      return (
+                        <img
+                          src={coverSrc}
+                          alt={selectedNovel.title}
+                          className="writerdashboard-novel-cover"
+                          style={
+                            isFallback
+                              ? {
+                                  objectFit: 'cover',
+                                  objectPosition: 'center',
+                                  borderRadius: 12,
+                                  transform: 'scale(1.08) translateY(-6px)',
+                                  background: '#f5f5f5',
+                                }
+                              : undefined
+                          }
+                          onError={(e) => {
+                            if (e.currentTarget.src !== fallbackImage) {
+                              e.currentTarget.src = fallbackImage;
                             }
-                      }
-                    />
+                          }}
+                        />
+                      );
+                    })()}
                   </Col>
                   <Col xs={24} md={16} lg={18} className="writerdashboard-details-col">
                     <div className="writerdashboard-novel-main">

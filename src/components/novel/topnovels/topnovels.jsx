@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Typography, Spin, Tag, Alert } from 'antd';
 import { EyeOutlined, HeartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { http } from '../../../services/_http';
 import { handleImageError } from '../../../utils/imageUtils';
 import fallbackImage from '../../../assets/images/novel_default.png';
 import './topnovels.css';
@@ -22,17 +22,13 @@ const TopNovels = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(
-          'https://yushan-backend-staging.up.railway.app/api/ranking/novel',
-          {
-            params: {
-              page: 0,
-              size: 15,
-              sortType: 'view',
-              timeRange: 'overall',
-            },
-          }
-        );
+        const response = await http.get('/novels', {
+          params: {
+            page: 0,
+            size: 5,
+            status: 'PUBLISHED',
+          },
+        });
 
         if (response.data && response.data.data && response.data.data.content) {
           const novels = response.data.data.content;
@@ -112,7 +108,9 @@ const TopNovels = () => {
                     style={{ cursor: 'pointer', color: '#1890ff' }}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent novel card click
-                      navigate(`/profile/${novel.authorId || novel.userId}`);
+                      // Use query param `userId` to match the app's /profile route handling
+                      const userId = novel?.author?.uuid || novel.authorId || novel.userId;
+                      navigate(`/profile?userId=${encodeURIComponent(userId)}`);
                     }}
                   >
                     by {novel.authorUsername || novel.author || 'Unknown Author'}
