@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/yushan-platform-frontend/static/css/main.fa3ae357.css",
-    "main.js": "/yushan-platform-frontend/static/js/main.462c02eb.js",
+    "main.js": "/yushan-platform-frontend/static/js/main.b39594c8.js",
     "static/media/icon1.png": "/yushan-platform-frontend/static/media/icon1.de48fdb3b795cce0a896.png",
     "static/media/logo.png": "/yushan-platform-frontend/static/media/logo.3dac8368101d1f145224.png",
     "static/media/userprofilecover.png": "/yushan-platform-frontend/static/media/userprofilecover.3a0f75795081371fde1e.png",
@@ -14,10 +14,10 @@
     "static/media/user_male.png": "/yushan-platform-frontend/static/media/user_male.59b848e45364f11c9906.png",
     "index.html": "/yushan-platform-frontend/index.html",
     "main.fa3ae357.css.map": "/yushan-platform-frontend/static/css/main.fa3ae357.css.map",
-    "main.462c02eb.js.map": "/yushan-platform-frontend/static/js/main.462c02eb.js.map"
+    "main.b39594c8.js.map": "/yushan-platform-frontend/static/js/main.b39594c8.js.map"
   },
   "entrypoints": [
     "static/css/main.fa3ae357.css",
-    "static/js/main.462c02eb.js"
+    "static/js/main.b39594c8.js"
   ]
 }
