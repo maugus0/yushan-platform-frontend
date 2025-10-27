@@ -12,6 +12,7 @@ import {
 import { xpToLevel, levelMeta } from '../../utils/levels';
 import './leaderboard-list.css';
 import testImg from '../../assets/images/novel_default.png'; // keep fallback
+import userDefault from '../../assets/images/user.png';
 
 // Build absolute URL for images from backend (staging or same-origin /api)
 const API_BASE = (process.env.REACT_APP_API_URL || '/api').replace(/\/$/, '');
@@ -30,8 +31,9 @@ function toAbsoluteUrl(u) {
 // so Antd Avatar uses its fallback icon. This avoids 401 image requests.
 function resolveImageSrc(u) {
   const abs = toAbsoluteUrl(u);
-  if (!abs) return undefined;
-  return abs.startsWith(`${API_BASE}/`) ? undefined : abs;
+  if (!abs) return userDefault; // fall back to local default avatar
+  // If image is hosted on our API (protected), return local default to avoid 401 image requests
+  return abs.startsWith(`${API_BASE}/`) ? userDefault : abs;
 }
 
 function AvatarMaybeAuth({ src, ...rest }) {
@@ -39,8 +41,19 @@ function AvatarMaybeAuth({ src, ...rest }) {
   useEffect(() => {
     setUrl(resolveImageSrc(src));
   }, [src]);
-  // onError: keep icon fallback
-  return <Avatar {...rest} src={url} onError={() => false} />;
+  // onError: fallback to local default user image
+  return (
+    <Avatar
+      {...rest}
+      src={url}
+      onError={(e) => {
+        // ensure fallback to local user image when remote fails
+        // setAttribute directly to avoid React warning about changing src during render
+        e?.currentTarget && (e.currentTarget.src = userDefault);
+        return false;
+      }}
+    />
+  );
 }
 
 const Medal = ({ rank }) => {
