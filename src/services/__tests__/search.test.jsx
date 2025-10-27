@@ -75,7 +75,6 @@ describe('searchService', () => {
 
   // --- searchUsers ---
   describe('searchChapters', () => {
-
     it('should search chapters with custom pagination', async () => {
       http.get.mockResolvedValue(mockUserResponseNested);
       await searchService.searchChapters('test', 2, 5);
