@@ -202,7 +202,7 @@ export default function LeaderboardList({
     const rank = index + 1;
     const username = item.username || 'User';
     const userKey = item.uuid || or(item.userId, username);
-    const xp = or(item.exp, item.xp) || 0;
+    const xp = or(item.currentExp, or(item.exp, item.xp)) || 0;
     const level = item.level ?? xpToLevel(xp);
     const meta = levelMeta(level);
 
