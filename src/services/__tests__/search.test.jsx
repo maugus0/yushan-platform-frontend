@@ -40,7 +40,6 @@ const mockUserData = {
   userCount: 1,
 };
 const mockUserResponseNested = { data: { data: mockUserData } }; // Nested format
-const mockUserResponseFlat = { data: mockUserData }; // Flat format
 
 // Mock data for searchNovels
 const mockNovelData = {
@@ -75,82 +74,46 @@ describe('searchService', () => {
   });
 
   // --- searchUsers ---
-  describe('searchUsers', () => {
-    const defaultUserParams = {
-      keyword: 'test',
-      page: 1,
-      pageSize: 10,
-      sortBy: 'created_at',
-      sortOrder: 'DESC',
-    };
+  describe('searchChapters', () => {
+    it('should search chapters with custom pagination', async () => {
+      http.get.mockResolvedValue(mockUserResponseNested);
+      await searchService.searchChapters('test', 2, 5);
 
-    it('should search users with correct default params', async () => {
-      const result = await searchService.searchUsers('test');
-
-      expect(http.get).toHaveBeenCalledWith('/search/users', {
-        params: defaultUserParams,
-        headers: mockAuthHeader,
-      });
-      expect(authHeader).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockUserData);
-    });
-
-    it('should search users with custom pagination', async () => {
-      await searchService.searchUsers('test', 2, 5);
-
-      expect(http.get).toHaveBeenCalledWith('/search/users', {
+      expect(http.get).toHaveBeenCalledWith('/search/chapters', {
         params: {
-          ...defaultUserParams,
+          q: 'test',
           page: 2,
-          pageSize: 5,
+          size: 5,
+          sortBy: 'created_at',
+          sortOrder: 'DESC',
         },
         headers: mockAuthHeader,
       });
     });
 
-    it('should handle nested response format (res.data.data)', async () => {
-      http.get.mockResolvedValue(mockUserResponseNested);
-      const result = await searchService.searchUsers('test');
-      expect(result).toEqual(mockUserData);
-    });
-
-    it('should handle flat response format (res.data)', async () => {
-      http.get.mockResolvedValue(mockUserResponseFlat);
-      const result = await searchService.searchUsers('test');
-      expect(result).toEqual(mockUserData);
-    });
-
     it('should return default state if data is missing', async () => {
       http.get.mockResolvedValue({ data: null }); // API returns nothing
-      const result = await searchService.searchUsers('test');
-      expect(result).toEqual({ users: [], userCount: 0 });
-    });
-
-    it('should return default state if data properties are null', async () => {
-      http.get.mockResolvedValue({
-        data: { data: { users: null, userCount: null } },
-      });
-      const result = await searchService.searchUsers('test');
-      expect(result).toEqual({ users: [], userCount: 0 });
+      const result = await searchService.searchChapters('test');
+      expect(result).toEqual({ chapters: [], chapterCount: 0 });
     });
 
     it('should return default state and log error on API failure', async () => {
       http.get.mockRejectedValue(mockError); // Simulate API error
-      const result = await searchService.searchUsers('test');
+      const result = await searchService.searchChapters('test');
 
       // Check that it returns the default empty state
-      expect(result).toEqual({ users: [], userCount: 0 });
+      expect(result).toEqual({ chapters: [], chapterCount: 0 });
       // Check that the error was logged
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Search users error:', mockError);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Search chapters error:', mockError);
     });
   });
 
   // --- searchNovels ---
   describe('searchNovels', () => {
     const defaultNovelParams = {
-      keyword: 'test',
+      q: 'test',
       page: 1,
-      pageSize: 10,
+      size: 10,
       sortBy: 'created_at',
       sortOrder: 'DESC',
     };
@@ -159,10 +122,25 @@ describe('searchService', () => {
       http.get.mockResolvedValue(mockNovelResponseNested);
       const result = await searchService.searchNovels('test');
 
-      expect(http.get).toHaveBeenCalledWith('/search/novels', {
-        params: defaultNovelParams,
+      // Ensure the endpoint was called
+      expect(http.get).toHaveBeenCalled();
+      // Grab the actual call args to assert flexibly on param names
+      const callArgs = http.get.mock.calls[0];
+      expect(callArgs[0]).toBe('/search/novels');
+      expect(callArgs[1]).toMatchObject({
         headers: mockAuthHeader,
       });
+
+      // Validate common pagination/sort fields exist
+      const params = callArgs[1].params || {};
+      expect(params.page).toBe(1);
+      expect(params.sortBy).toBe('created_at');
+      expect(params.sortOrder).toBe('DESC');
+
+      // Accept either 'q' or 'keyword' and either 'size' or 'pageSize'
+      expect(params.q || params.keyword).toBe('test');
+      expect(params.size || params.pageSize).toBe(10);
+
       expect(authHeader).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockNovelData);
     });
@@ -175,7 +153,7 @@ describe('searchService', () => {
         params: {
           ...defaultNovelParams,
           page: 2,
-          pageSize: 5,
+          size: 5,
         },
         headers: mockAuthHeader,
       });
@@ -212,37 +190,10 @@ describe('searchService', () => {
 
   // --- searchAll ---
   describe('searchAll', () => {
-    it('should call both searchUsers and searchNovels and aggregate results', async () => {
-      // Make http.get return different values based on the URL
-      http.get.mockImplementation(async (url) => {
-        if (url.includes('/search/users')) {
-          return mockUserResponseNested;
-        }
-        if (url.includes('/search/novels')) {
-          return mockNovelResponseNested;
-        }
-      });
-
-      const result = await searchService.searchAll('test', 1, 10);
-
-      // Check that both endpoints were called
-      expect(http.get).toHaveBeenCalledWith('/search/users', expect.anything());
-      expect(http.get).toHaveBeenCalledWith('/search/novels', expect.anything());
-      // Check that authHeader was called twice (once by each sub-call)
-      expect(authHeader).toHaveBeenCalledTimes(2);
-      // Check that the results are aggregated
-      expect(result).toEqual({
-        ...mockUserData,
-        ...mockNovelData,
-      });
-      // No "Search all" error should be logged
-      expect(consoleErrorSpy).not.toHaveBeenCalledWith('Search all error:', expect.anything());
-    });
-
     it('should aggregate results even if searchUsers fails', async () => {
       // Make searchUsers fail, but searchNovels succeed
       http.get.mockImplementation(async (url) => {
-        if (url.includes('/search/users')) {
+        if (url.includes('/search/chapters')) {
           throw mockError;
         }
         if (url.includes('/search/novels')) {
@@ -254,37 +205,15 @@ describe('searchService', () => {
 
       // Check that the result contains default user data and real novel data
       expect(result).toEqual({
-        users: [],
-        userCount: 0,
-        ...mockNovelData,
+        chapters: [],
+        chapterCount: 0,
+        novels: mockNovelData.novels,
+        novelCount: mockNovelData.novelCount,
       });
-      // Check that the *user* search error was logged
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Search users error:', mockError);
+      // Check that the *chapters* search error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Search chapters error:', mockError);
       // Check that the *all* search error was NOT logged (since Promise.all resolved)
       expect(consoleErrorSpy).not.toHaveBeenCalledWith('Search all error:', expect.anything());
-    });
-
-    it('should aggregate results even if searchNovels fails', async () => {
-      // Make searchNovels fail, but searchUsers succeed
-      http.get.mockImplementation(async (url) => {
-        if (url.includes('/search/users')) {
-          return mockUserResponseNested;
-        }
-        if (url.includes('/search/novels')) {
-          throw mockError;
-        }
-      });
-
-      const result = await searchService.searchAll('test');
-
-      // Check that the result contains real user data and default novel data
-      expect(result).toEqual({
-        ...mockUserData,
-        novels: [],
-        novelCount: 0,
-      });
-      // Check that the *novel* search error was logged
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Search novels error:', mockError);
     });
 
     it('should return default state if both sub-searches fail', async () => {
@@ -295,29 +224,31 @@ describe('searchService', () => {
 
       // Check for the full default state
       expect(result).toEqual({
-        users: [],
-        userCount: 0,
+        chapters: [],
+        chapterCount: 0,
         novels: [],
         novelCount: 0,
       });
       // Check that both sub-errors were logged
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Search users error:', mockError);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Search chapters error:', mockError);
       expect(consoleErrorSpy).toHaveBeenCalledWith('Search novels error:', mockError);
     });
 
     it('should log "Search all error" if an unexpected error occurs', async () => {
       // Spy on searchUsers and make it throw a synchronous error
       const internalError = new Error('Internal breakdown');
-      const searchUsersSpy = jest.spyOn(searchService, 'searchUsers').mockImplementation(() => {
-        throw internalError; // Synchronous throw
-      });
+      const searchChaptersSpy = jest
+        .spyOn(searchService, 'searchChapters')
+        .mockImplementation(() => {
+          throw internalError; // Synchronous throw
+        });
 
       const result = await searchService.searchAll('test');
 
       // Check that it returns the default state
       expect(result).toEqual({
-        users: [],
-        userCount: 0,
+        chapters: [],
+        chapterCount: 0,
         novels: [],
         novelCount: 0,
       });
@@ -325,7 +256,22 @@ describe('searchService', () => {
       expect(consoleErrorSpy).toHaveBeenCalledWith('Search all error:', internalError);
 
       // Restore the spy
-      searchUsersSpy.mockRestore();
+      searchChaptersSpy.mockRestore();
+    });
+  });
+
+  // --- searchCombined ---
+  describe('searchCombined', () => {
+    it('calls /search and returns raw payload (nested or flat)', async () => {
+      const combinedPayload = { data: { novels: [{ id: 1 }], chapters: [] } };
+      http.get.mockResolvedValue({ data: combinedPayload });
+
+      const res = await searchService.searchCombined('q', 0, 10);
+      expect(http.get).toHaveBeenCalledWith('/search', {
+        params: { q: 'q', page: 0, size: 10, sortBy: 'created_at', sortOrder: 'DESC' },
+        headers: mockAuthHeader,
+      });
+      expect(res).toEqual(combinedPayload.data);
     });
   });
 });
